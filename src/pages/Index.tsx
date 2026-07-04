@@ -136,8 +136,8 @@ const Index = () => {
                 {featuredCollection.name}
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-md">
-                {featuredCollection.description}. Discover sculptural forms that cast warmth and shadow, 
-                designed to transform any space into a sanctuary of light.
+                {featuredCollection.description}. Explore our curated edit of {featuredCollection.name.toLowerCase()},
+                thoughtfully selected for the details that make every day feel considered.
               </p>
               <Button
                 asChild
