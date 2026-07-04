@@ -123,6 +123,12 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=80",
     ],
     featured: true,
+    volume: "50ml Eau de Parfum",
+    notes: {
+      top: "Bergamot, Pink Pepper, Cardamom",
+      heart: "Oud, Rose, Iris",
+      base: "Amber, Smoked Vanilla, Sandalwood",
+    },
   },
   {
     id: "blanc-cologne",
@@ -138,6 +144,12 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=800&q=80",
     ],
     new: true,
+    volume: "100ml Eau de Cologne",
+    notes: {
+      top: "Italian Lemon, Bergamot, Mint",
+      heart: "Neroli, Petitgrain, Jasmine",
+      base: "White Musk, Cedarwood",
+    },
   },
   // Fashion
   {
@@ -154,6 +166,14 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80",
     ],
     featured: true,
+    sizes: ["XS", "S", "M", "L", "XL"],
+    colors: [
+      { name: "Camel", hex: "#B18867" },
+      { name: "Charcoal", hex: "#2F2E2C" },
+      { name: "Ink Navy", hex: "#22293A" },
+    ],
+    fit: "Regular fit, hits below the knee. Model is 185cm, wearing size M.",
+    care: "Dry clean only. Store on a wide wooden hanger.",
   },
   {
     id: "linen-shirt",
@@ -168,6 +188,14 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=80",
       "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&q=80",
     ],
+    sizes: ["S", "M", "L", "XL"],
+    colors: [
+      { name: "Off White", hex: "#EFE9DC" },
+      { name: "Sand", hex: "#C6B79A" },
+      { name: "Olive", hex: "#5F6B4A" },
+    ],
+    fit: "Relaxed fit with a slight drop shoulder.",
+    care: "Machine wash cold with like colors. Tumble dry low.",
   },
   // Sepatu
   {
@@ -184,6 +212,12 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?w=800&q=80",
     ],
     featured: true,
+    sizes: ["40", "41", "42", "43", "44", "45"],
+    colors: [
+      { name: "Cognac", hex: "#8B4A2B" },
+      { name: "Black", hex: "#1A1A1A" },
+    ],
+    care: "Wipe with a soft cloth. Condition with neutral leather cream every 6 weeks.",
   },
   {
     id: "runner-sneaker",
@@ -199,6 +233,13 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80",
     ],
     new: true,
+    sizes: ["39", "40", "41", "42", "43", "44", "45"],
+    colors: [
+      { name: "Off White", hex: "#EFEAE1" },
+      { name: "Stone", hex: "#A29E96" },
+      { name: "Black", hex: "#1A1A1A" },
+    ],
+    care: "Spot clean with a damp cloth. Air dry away from direct heat.",
   },
   // Aksesoris
   {
@@ -214,6 +255,13 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=800&q=80",
       "https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=800&q=80",
     ],
+    sizes: ["80cm", "85cm", "90cm", "95cm", "100cm"],
+    colors: [
+      { name: "Tan", hex: "#B68459" },
+      { name: "Dark Brown", hex: "#3E2A1E" },
+      { name: "Black", hex: "#1A1A1A" },
+    ],
+    care: "Wipe clean. Apply leather balm every few months to preserve the finish.",
   },
   {
     id: "silk-scarf",
@@ -229,6 +277,13 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=80",
     ],
     featured: true,
+    dimensions: "90cm × 90cm",
+    colors: [
+      { name: "Ivory", hex: "#EDE6D5" },
+      { name: "Rust", hex: "#A94E2B" },
+      { name: "Ink", hex: "#1F2A44" },
+    ],
+    care: "Dry clean only. Store folded away from direct sunlight.",
   },
   // Elektronik
   {
@@ -245,6 +300,26 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80",
     ],
     featured: true,
+    colors: [
+      { name: "Matte Black", hex: "#1A1A1A" },
+      { name: "Silver", hex: "#C9C9C9" },
+      { name: "Sand", hex: "#D4C4A8" },
+    ],
+    specs: [
+      { label: "Driver", value: "40mm dynamic, titanium coated" },
+      { label: "Battery", value: "Up to 40h (ANC on)" },
+      { label: "Charging", value: "USB-C, 10 min = 5h playback" },
+      { label: "Connectivity", value: "Bluetooth 5.3, multipoint" },
+      { label: "Weight", value: "265g" },
+    ],
+    inTheBox: [
+      "Studio Wireless Headphones",
+      "Hard-shell carrying case",
+      "USB-C charging cable",
+      "3.5mm audio cable",
+      "Quick start guide",
+    ],
+    warranty: "2-year limited warranty",
   },
   {
     id: "smart-speaker",
@@ -260,6 +335,24 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1589003077984-894e133dabab?w=800&q=80",
     ],
     new: true,
+    colors: [
+      { name: "Chalk", hex: "#EDEAE3" },
+      { name: "Slate", hex: "#4A4E52" },
+      { name: "Terracotta", hex: "#B5613F" },
+    ],
+    specs: [
+      { label: "Output", value: "40W total, 360° sound" },
+      { label: "Connectivity", value: "Wi-Fi 6, Bluetooth 5.2, AirPlay 2" },
+      { label: "Voice", value: "Built-in assistant support" },
+      { label: "Power", value: "AC powered, 1.5m braided cable" },
+      { label: "Dimensions", value: "16 × 16 × 18 cm" },
+    ],
+    inTheBox: [
+      "Compact Smart Speaker",
+      "Braided power cable",
+      "Setup guide",
+    ],
+    warranty: "2-year limited warranty",
   },
   // Tas
   {
