@@ -20,6 +20,24 @@ export interface Product {
   images: string[];
   featured?: boolean;
   new?: boolean;
+  /** Selectable sizes (fashion, sepatu) */
+  sizes?: string[];
+  /** Selectable color options */
+  colors?: { name: string; hex: string }[];
+  /** Fragrance notes for parfum */
+  notes?: { top?: string; heart?: string; base?: string };
+  /** Volume / bottle size for parfum */
+  volume?: string;
+  /** Care instructions for fashion / textiles */
+  care?: string;
+  /** Fit description for fashion */
+  fit?: string;
+  /** Key/value specs for elektronik */
+  specs?: { label: string; value: string }[];
+  /** What ships in the box (elektronik) */
+  inTheBox?: string[];
+  /** Warranty text (elektronik / jam) */
+  warranty?: string;
 }
 
 export const collections: Collection[] = [
