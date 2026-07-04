@@ -12,12 +12,12 @@ export const Footer = () => {
             <div>
               <Link
                 to="/"
-                className="font-serif text-3xl md:text-4xl tracking-tight text-background"
+                className="font-serif italic text-3xl md:text-4xl tracking-tight text-background"
               >
-                Maison
+                xurts_shop
               </Link>
               <p className="mt-3 text-sm text-background/50 leading-relaxed max-w-xs">
-                Curated home objects and lifestyle pieces for considered living.
+                Parfum, fashion, sepatu, aksesoris, dan elektronik pilihan untuk gaya hidup modern.
               </p>
             </div>
 
@@ -140,10 +140,10 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="mailto:hello@maison.com"
+                  href="mailto:hello@xurts.shop"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
-                  hello@maison.com
+                  hello@xurts.shop
                 </a>
               </li>
               <li>
@@ -160,7 +160,7 @@ export const Footer = () => {
       <div className="border-t border-background/10">
         <div className="container-full py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-background/30">
-            © {new Date().getFullYear()} Maison. All rights reserved.
+            © {new Date().getFullYear()} xurts_shop. All rights reserved.
           </p>
           <div className="flex gap-8">
             <a

@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ChevronLeft, ChevronRight, ArrowRight, ShoppingBag } from "lucide-react";
+import { Heart, ChevronLeft, ChevronRight, ArrowRight, ShoppingBag, Check } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
@@ -12,11 +12,24 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
+// Rough brightness check to pick an accessible check-icon color on a swatch
+const isLight = (hex: string) => {
+  const h = hex.replace("#", "");
+  const bigint = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  // Perceived luminance
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 160;
+};
+
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const product = getProductBySlug(slug || "");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { addItem: addToCart } = useCart();
   const { toast } = useToast();
@@ -40,6 +53,7 @@ const ProductDetail = () => {
   const inWishlist = isInWishlist(product.id);
   const relatedProducts = getRelatedProducts(product.id);
   const collection = collections.find((c) => c.id === product.collection);
+  const sizeLabel = product.collection === "sepatu" ? "Size (EU)" : "Size";
 
   const handleWishlistToggle = () => {
     if (inWishlist) {
@@ -58,10 +72,27 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      toast({
+        title: "Pilih ukuran dulu",
+        description: `Silakan pilih ${sizeLabel.toLowerCase()} sebelum menambahkan ke keranjang.`,
+      });
+      return;
+    }
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast({
+        title: "Pilih warna dulu",
+        description: "Silakan pilih warna sebelum menambahkan ke keranjang.",
+      });
+      return;
+    }
     addToCart(product, quantity);
+    const variantBits = [selectedSize, selectedColor].filter(Boolean).join(" · ");
     toast({
       title: "Added to bag",
-      description: `${quantity} × ${product.name} added to your bag.`,
+      description: variantBits
+        ? `${quantity} × ${product.name} (${variantBits}) added to your bag.`
+        : `${quantity} × ${product.name} added to your bag.`,
     });
     setQuantity(1);
   };
@@ -224,11 +255,125 @@ const ProductDetail = () => {
                 {product.longDescription}
               </p>
 
-              {/* Details */}
+              {/* Fragrance notes (parfum) */}
+              {product.notes && (
+                <div className="space-y-4 mb-10 pb-10 border-b border-border">
+                  <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block">
+                    Fragrance Notes
+                  </span>
+                  <div className="grid grid-cols-1 gap-3">
+                    {product.notes.top && (
+                      <div className="flex gap-4">
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Top</span>
+                        <span className="text-sm text-foreground leading-relaxed">{product.notes.top}</span>
+                      </div>
+                    )}
+                    {product.notes.heart && (
+                      <div className="flex gap-4">
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Heart</span>
+                        <span className="text-sm text-foreground leading-relaxed">{product.notes.heart}</span>
+                      </div>
+                    )}
+                    {product.notes.base && (
+                      <div className="flex gap-4">
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Base</span>
+                        <span className="text-sm text-foreground leading-relaxed">{product.notes.base}</span>
+                      </div>
+                    )}
+                  </div>
+                  {product.volume && (
+                    <div className="pt-2">
+                      <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                        Volume
+                      </span>
+                      <span className="text-sm text-foreground">{product.volume}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Color swatches */}
+              {product.colors && product.colors.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
+                      Color
+                    </span>
+                    {selectedColor && (
+                      <span className="text-xs text-foreground">{selectedColor}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {product.colors.map((c) => {
+                      const active = selectedColor === c.name;
+                      return (
+                        <button
+                          key={c.name}
+                          type="button"
+                          aria-label={c.name}
+                          onClick={() => setSelectedColor(c.name)}
+                          className={cn(
+                            "relative w-10 h-10 rounded-full border transition-all duration-300",
+                            active
+                              ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                              : "border-border hover:border-foreground/60"
+                          )}
+                          style={{ backgroundColor: c.hex }}
+                        >
+                          {active && (
+                            <Check
+                              className={cn(
+                                "w-4 h-4 absolute inset-0 m-auto",
+                                isLight(c.hex) ? "text-charcoal" : "text-white"
+                              )}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Size selector */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
+                      {sizeLabel}
+                    </span>
+                    <button className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+                      Size guide
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {product.sizes.map((size) => {
+                      const active = selectedSize === size;
+                      return (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          className={cn(
+                            "h-11 text-xs tracking-[0.1em] uppercase border transition-all duration-300",
+                            active
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border hover:border-foreground"
+                          )}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Generic details */}
               <div className="space-y-5 mb-10 pb-10 border-b border-border">
                 <div>
                   <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
-                    Materials
+                    {product.collection === "parfum" ? "Composition" : "Materials"}
                   </span>
                   <span className="text-sm text-foreground">{product.materials}</span>
                 </div>
@@ -238,6 +383,30 @@ const ProductDetail = () => {
                       Dimensions
                     </span>
                     <span className="text-sm text-foreground">{product.dimensions}</span>
+                  </div>
+                )}
+                {product.fit && (
+                  <div>
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                      Fit
+                    </span>
+                    <span className="text-sm text-foreground leading-relaxed">{product.fit}</span>
+                  </div>
+                )}
+                {product.care && (
+                  <div>
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                      Care
+                    </span>
+                    <span className="text-sm text-foreground leading-relaxed">{product.care}</span>
+                  </div>
+                )}
+                {product.warranty && (
+                  <div>
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                      Warranty
+                    </span>
+                    <span className="text-sm text-foreground">{product.warranty}</span>
                   </div>
                 )}
               </div>
@@ -302,6 +471,56 @@ const ProductDetail = () => {
           </div>
         </div>
       </section>
+
+      {/* Specifications / In the box (elektronik & similar) */}
+      {(product.specs?.length || product.inTheBox?.length) && (
+        <section className="py-16 md:py-20 border-t border-border">
+          <div className="container-full">
+            <div className="grid md:grid-cols-2 gap-12 md:gap-20 max-w-5xl">
+              {product.specs && product.specs.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+                    Specifications
+                  </p>
+                  <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-8">
+                    Built with intent
+                  </h3>
+                  <dl className="divide-y divide-border">
+                    {product.specs.map((s) => (
+                      <div key={s.label} className="flex justify-between gap-6 py-3.5">
+                        <dt className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
+                          {s.label}
+                        </dt>
+                        <dd className="text-sm text-foreground text-right max-w-[60%]">
+                          {s.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+              {product.inTheBox && product.inTheBox.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+                    In the Box
+                  </p>
+                  <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-8">
+                    What ships to you
+                  </h3>
+                  <ul className="space-y-3">
+                    {product.inTheBox.map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-sm text-foreground">
+                        <span className="mt-2 w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
