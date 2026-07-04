@@ -472,6 +472,56 @@ const ProductDetail = () => {
         </div>
       </section>
 
+      {/* Specifications / In the box (elektronik & similar) */}
+      {(product.specs?.length || product.inTheBox?.length) && (
+        <section className="py-16 md:py-20 border-t border-border">
+          <div className="container-full">
+            <div className="grid md:grid-cols-2 gap-12 md:gap-20 max-w-5xl">
+              {product.specs && product.specs.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+                    Specifications
+                  </p>
+                  <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-8">
+                    Built with intent
+                  </h3>
+                  <dl className="divide-y divide-border">
+                    {product.specs.map((s) => (
+                      <div key={s.label} className="flex justify-between gap-6 py-3.5">
+                        <dt className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
+                          {s.label}
+                        </dt>
+                        <dd className="text-sm text-foreground text-right max-w-[60%]">
+                          {s.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+              {product.inTheBox && product.inTheBox.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+                    In the Box
+                  </p>
+                  <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-8">
+                    What ships to you
+                  </h3>
+                  <ul className="space-y-3">
+                    {product.inTheBox.map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-sm text-foreground">
+                        <span className="mt-2 w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Related Products */}
       {relatedProducts.length > 0 && (
         <section className="py-20 md:py-28 bg-linen">
