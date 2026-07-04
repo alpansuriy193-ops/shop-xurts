@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ChevronLeft, ChevronRight, ArrowRight, ShoppingBag } from "lucide-react";
+import { Heart, ChevronLeft, ChevronRight, ArrowRight, ShoppingBag, Check } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
@@ -17,6 +17,8 @@ const ProductDetail = () => {
   const product = getProductBySlug(slug || "");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { addItem: addToCart } = useCart();
   const { toast } = useToast();
@@ -40,6 +42,7 @@ const ProductDetail = () => {
   const inWishlist = isInWishlist(product.id);
   const relatedProducts = getRelatedProducts(product.id);
   const collection = collections.find((c) => c.id === product.collection);
+  const sizeLabel = product.collection === "sepatu" ? "Size (EU)" : "Size";
 
   const handleWishlistToggle = () => {
     if (inWishlist) {
@@ -58,10 +61,27 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      toast({
+        title: "Pilih ukuran dulu",
+        description: `Silakan pilih ${sizeLabel.toLowerCase()} sebelum menambahkan ke keranjang.`,
+      });
+      return;
+    }
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast({
+        title: "Pilih warna dulu",
+        description: "Silakan pilih warna sebelum menambahkan ke keranjang.",
+      });
+      return;
+    }
     addToCart(product, quantity);
+    const variantBits = [selectedSize, selectedColor].filter(Boolean).join(" · ");
     toast({
       title: "Added to bag",
-      description: `${quantity} × ${product.name} added to your bag.`,
+      description: variantBits
+        ? `${quantity} × ${product.name} (${variantBits}) added to your bag.`
+        : `${quantity} × ${product.name} added to your bag.`,
     });
     setQuantity(1);
   };
