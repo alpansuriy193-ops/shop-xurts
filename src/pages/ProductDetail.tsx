@@ -244,11 +244,125 @@ const ProductDetail = () => {
                 {product.longDescription}
               </p>
 
-              {/* Details */}
+              {/* Fragrance notes (parfum) */}
+              {product.notes && (
+                <div className="space-y-4 mb-10 pb-10 border-b border-border">
+                  <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block">
+                    Fragrance Notes
+                  </span>
+                  <div className="grid grid-cols-1 gap-3">
+                    {product.notes.top && (
+                      <div className="flex gap-4">
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Top</span>
+                        <span className="text-sm text-foreground leading-relaxed">{product.notes.top}</span>
+                      </div>
+                    )}
+                    {product.notes.heart && (
+                      <div className="flex gap-4">
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Heart</span>
+                        <span className="text-sm text-foreground leading-relaxed">{product.notes.heart}</span>
+                      </div>
+                    )}
+                    {product.notes.base && (
+                      <div className="flex gap-4">
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Base</span>
+                        <span className="text-sm text-foreground leading-relaxed">{product.notes.base}</span>
+                      </div>
+                    )}
+                  </div>
+                  {product.volume && (
+                    <div className="pt-2">
+                      <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                        Volume
+                      </span>
+                      <span className="text-sm text-foreground">{product.volume}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Color swatches */}
+              {product.colors && product.colors.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
+                      Color
+                    </span>
+                    {selectedColor && (
+                      <span className="text-xs text-foreground">{selectedColor}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {product.colors.map((c) => {
+                      const active = selectedColor === c.name;
+                      return (
+                        <button
+                          key={c.name}
+                          type="button"
+                          aria-label={c.name}
+                          onClick={() => setSelectedColor(c.name)}
+                          className={cn(
+                            "relative w-10 h-10 rounded-full border transition-all duration-300",
+                            active
+                              ? "border-foreground ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                              : "border-border hover:border-foreground/60"
+                          )}
+                          style={{ backgroundColor: c.hex }}
+                        >
+                          {active && (
+                            <Check
+                              className={cn(
+                                "w-4 h-4 absolute inset-0 m-auto",
+                                isLight(c.hex) ? "text-charcoal" : "text-white"
+                              )}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Size selector */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
+                      {sizeLabel}
+                    </span>
+                    <button className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+                      Size guide
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {product.sizes.map((size) => {
+                      const active = selectedSize === size;
+                      return (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          className={cn(
+                            "h-11 text-xs tracking-[0.1em] uppercase border transition-all duration-300",
+                            active
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border hover:border-foreground"
+                          )}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Generic details */}
               <div className="space-y-5 mb-10 pb-10 border-b border-border">
                 <div>
                   <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
-                    Materials
+                    {product.collection === "parfum" ? "Composition" : "Materials"}
                   </span>
                   <span className="text-sm text-foreground">{product.materials}</span>
                 </div>
@@ -258,6 +372,30 @@ const ProductDetail = () => {
                       Dimensions
                     </span>
                     <span className="text-sm text-foreground">{product.dimensions}</span>
+                  </div>
+                )}
+                {product.fit && (
+                  <div>
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                      Fit
+                    </span>
+                    <span className="text-sm text-foreground leading-relaxed">{product.fit}</span>
+                  </div>
+                )}
+                {product.care && (
+                  <div>
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                      Care
+                    </span>
+                    <span className="text-sm text-foreground leading-relaxed">{product.care}</span>
+                  </div>
+                )}
+                {product.warranty && (
+                  <div>
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
+                      Warranty
+                    </span>
+                    <span className="text-sm text-foreground">{product.warranty}</span>
                   </div>
                 )}
               </div>
