@@ -23,12 +23,12 @@ const Index = () => {
 
   // Instagram placeholder images
   const instagramImages = [
-    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&q=80",
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&q=80",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
-    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80",
-    "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80",
-    "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400&q=80",
+    "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&q=80",
+    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80",
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80",
+    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
   ];
 
   return (
@@ -37,15 +37,15 @@ const Index = () => {
       <section ref={heroRef} className="relative h-[100svh] -mt-16 md:-mt-20 overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>
           <img
-            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80"
-            alt="Curated home lifestyle"
+            src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80"
+            alt="Curated fashion and lifestyle"
             className="w-full h-[120%] object-cover animate-ken-burns"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/30 via-charcoal/10 to-charcoal/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/30 to-charcoal/70" />
         </motion.div>
 
         <motion.div
-          className="relative container-full h-full flex flex-col justify-end pb-20 md:pb-28 pt-16 md:pt-20"
+          className="relative container-full h-full flex flex-col justify-center pb-20 md:pb-28 pt-24 md:pt-32"
           style={{ opacity: heroOpacity }}
         >
           <motion.div
@@ -60,16 +60,16 @@ const Index = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/70 mb-6"
             >
-              Curated for Considered Living
+              Curated for Modern Living
             </motion.p>
-            <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl xl:text-9xl text-white mb-8 leading-[0.9] tracking-tight">
-              Objects of
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white mb-8 leading-[0.95] tracking-tight">
+              Style with
               <br />
-              <span className="italic font-normal">Quiet Beauty</span>
+              <span className="italic font-normal">Intention</span>
             </h1>
             <p className="text-base md:text-lg text-white/80 mb-10 leading-relaxed max-w-lg">
-              Handcrafted home goods and lifestyle pieces designed to bring
-              warmth and intention to everyday moments.
+              Parfum, fashion, sepatu, aksesoris, dan elektronik pilihan —
+              dikurasi untuk melengkapi setiap sisi keseharianmu.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -316,7 +316,7 @@ const Index = () => {
               Follow Us
             </p>
             <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4">
-              @maisonhome
+              @xurts_shop
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto">
               Join our community and get inspired by curated spaces and behind-the-scenes moments.
