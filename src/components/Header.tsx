@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, Menu, X } from "lucide-react";
+import { Heart, Menu, X, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -14,16 +14,21 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { items } = useWishlist();
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const { items, removeItem } = useWishlist();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,10 +109,13 @@ export const Header = () => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
-            {/* Wishlist Icon with Tooltip */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button className="relative p-2 hover:bg-accent transition-colors duration-300 group">
+            {/* Wishlist Icon with Drawer */}
+            <Sheet open={wishlistOpen} onOpenChange={setWishlistOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="relative p-2 hover:bg-accent transition-colors duration-300 group"
+                  aria-label="Open wishlist"
+                >
                   <Heart className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
                   <AnimatePresence>
                     {items.length > 0 && (
@@ -122,27 +130,92 @@ export const Header = () => {
                     )}
                   </AnimatePresence>
                 </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs">
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
+                <SheetHeader className="px-6 py-5 border-b border-border">
+                  <SheetTitle className="font-serif text-2xl flex items-baseline gap-2">
+                    Wishlist
+                    <span className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground">
+                      {items.length} {items.length === 1 ? "item" : "items"}
+                    </span>
+                  </SheetTitle>
+                </SheetHeader>
+
                 {items.length === 0 ? (
-                  <p className="text-sm">Your wishlist is empty</p>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">{items.length} saved {items.length === 1 ? 'item' : 'items'}</p>
-                    <div className="space-y-1">
-                      {items.slice(0, 3).map((item) => (
-                        <p key={item.id} className="text-xs text-muted-foreground truncate">
-                          {item.name}
-                        </p>
-                      ))}
-                      {items.length > 3 && (
-                        <p className="text-xs text-muted-foreground">+{items.length - 3} more</p>
-                      )}
-                    </div>
+                  <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+                    <Heart className="w-10 h-10 text-muted-foreground/40 mb-4" />
+                    <p className="font-serif text-xl text-foreground mb-2">
+                      Your wishlist is empty
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+                      Simpan barang favorit dari parfum, fashion, sepatu, aksesoris, hingga elektronik untuk dilihat lagi nanti.
+                    </p>
+                    <SheetClose asChild>
+                      <Button asChild className="rounded-none px-8 py-5 text-xs tracking-[0.15em] uppercase">
+                        <Link to="/products">Browse Products</Link>
+                      </Button>
+                    </SheetClose>
                   </div>
+                ) : (
+                  <>
+                    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+                      {items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex gap-4 group border-b border-border/60 pb-4 last:border-0"
+                        >
+                          <Link
+                            to={`/product/${item.slug}`}
+                            onClick={() => setWishlistOpen(false)}
+                            className="w-20 h-24 flex-shrink-0 overflow-hidden bg-muted/50"
+                          >
+                            <img
+                              src={item.images[0]}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </Link>
+                          <div className="flex-1 min-w-0 flex flex-col">
+                            <Link
+                              to={`/product/${item.slug}`}
+                              onClick={() => setWishlistOpen(false)}
+                              className="font-serif text-base text-foreground hover:text-primary transition-colors line-clamp-1"
+                            >
+                              {item.name}
+                            </Link>
+                            <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                              {item.description}
+                            </p>
+                            <div className="mt-auto flex items-center justify-between pt-2">
+                              <p className="text-sm font-medium text-foreground">
+                                ${item.price.toLocaleString()}
+                              </p>
+                              <button
+                                onClick={() => removeItem(item.id)}
+                                className="text-muted-foreground hover:text-primary transition-colors p-1"
+                                aria-label={`Remove ${item.name} from wishlist`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="border-t border-border px-6 py-4">
+                      <SheetClose asChild>
+                        <Button
+                          asChild
+                          className="w-full rounded-none py-5 text-xs tracking-[0.15em] uppercase"
+                        >
+                          <Link to="/products">Continue Shopping</Link>
+                        </Button>
+                      </SheetClose>
+                    </div>
+                  </>
                 )}
-              </TooltipContent>
-            </Tooltip>
+              </SheetContent>
+            </Sheet>
 
             {/* Cart Icon */}
             <CartIcon />
