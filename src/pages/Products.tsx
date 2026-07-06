@@ -96,7 +96,7 @@ const Products = () => {
           <img
             src={
               currentCollection?.heroImage ||
-              "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80"
+              "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
             }
             alt={currentCollection?.name || "All Products"}
             className="w-full h-full object-cover transition-opacity duration-700"
