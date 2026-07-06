@@ -114,8 +114,8 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1200&q=80"
-                  alt="Living space"
+                  src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200&q=80"
+                  alt="Curated boutique display"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
               </div>
@@ -132,8 +132,8 @@ const About = () => {
           >
             <div className="relative h-[50vh] md:h-[70vh] overflow-hidden group">
               <img
-                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80"
-                alt="Workshop detail"
+                src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80"
+                alt="Retail atmosphere"
                 className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-charcoal/20" />
@@ -166,8 +166,8 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80"
-                  alt="Artisan hands at work"
+                  src="https://images.unsplash.com/photo-1523170335258-f5c216c30b83?w=1200&q=80"
+                  alt="Signature perfume bottle"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
               </div>
@@ -272,16 +272,16 @@ const About = () => {
         <div className="grid grid-cols-3 gap-2 md:gap-4 h-[35vh] md:h-[50vh]">
           {[
             {
-              src: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
-              alt: "Handcrafted ceramics",
+              src: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80",
+              alt: "Signature parfum",
             },
             {
-              src: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80",
-              alt: "Styled living space",
+              src: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80",
+              alt: "Sneaker close-up",
             },
             {
-              src: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&q=80",
-              alt: "Artisan textiles",
+              src: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+              alt: "Wireless headphones",
             },
           ].map((img, i) => (
             <motion.div
@@ -306,7 +306,7 @@ const About = () => {
       <section className="py-28 md:py-40 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
+            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
             alt=""
             className="w-full h-full object-cover"
           />
