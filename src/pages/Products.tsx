@@ -233,8 +233,8 @@ const Products = () => {
       <section className="relative h-[50vh] overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
-            alt="Interior lifestyle"
+            src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1920&q=80"
+            alt="Curated lifestyle"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-charcoal/50" />
