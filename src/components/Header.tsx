@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { Heart, Menu, X, Trash2 } from "lucide-react";
+import { Heart, Menu, X, Trash2, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
 import { CartIcon } from "@/components/CartIcon";
+import { SearchDialog } from "@/components/SearchDialog";
+import { UserMenu } from "@/components/UserMenu";
 import { collections } from "@/data/products";
 import {
   NavigationMenu,
@@ -28,6 +30,7 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { items, removeItem } = useWishlist();
 
   useEffect(() => {
@@ -109,6 +112,18 @@ export const Header = () => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
+            {/* Search Icon */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="p-2 hover:bg-accent transition-colors duration-300 group"
+              aria-label="Search products"
+            >
+              <Search className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+            </button>
+
+            {/* User Menu */}
+            <UserMenu />
+
             {/* Wishlist Icon with Drawer */}
             <Sheet open={wishlistOpen} onOpenChange={setWishlistOpen}>
               <SheetTrigger asChild>
