@@ -235,6 +235,8 @@ export const Header = () => {
             {/* Cart Icon */}
             <CartIcon />
 
+            <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+
             {/* Mobile menu button */}
             <button
               className="md:hidden p-2 hover:bg-accent transition-colors duration-300"
