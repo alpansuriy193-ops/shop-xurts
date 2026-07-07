@@ -5,6 +5,7 @@ import { Heart, ChevronLeft, ChevronRight, ArrowRight, ShoppingBag, Check } from
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
+import { ProductReviews } from "@/components/ProductReviews";
 import { getProductBySlug, getRelatedProducts, collections } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
@@ -555,6 +556,8 @@ const ProductDetail = () => {
           </div>
         </section>
       )}
+
+      <ProductReviews productId={product.id} />
     </Layout>
   );
 };
