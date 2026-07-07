@@ -19,7 +19,7 @@ interface Review {
   title: string | null;
   comment: string;
   created_at: string;
-  profiles?: { display_name: string | null; avatar_url: string | null } | null;
+  display_name?: string | null;
 }
 
 const reviewSchema = z.object({
@@ -62,10 +62,21 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
     setLoading(true);
     const { data, error } = await supabase
       .from("product_reviews")
-      .select("id, product_id, user_id, rating, title, comment, created_at, profiles(display_name, avatar_url)")
+      .select("id, product_id, user_id, rating, title, comment, created_at")
       .eq("product_id", productId)
       .order("created_at", { ascending: false });
-    if (!error && data) setReviews(data as unknown as Review[]);
+    if (!error && data) {
+      const ids = Array.from(new Set(data.map((r) => r.user_id)));
+      let profileMap = new Map<string, string | null>();
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", ids);
+        profileMap = new Map((profs ?? []).map((p) => [p.id, p.display_name]));
+      }
+      setReviews(data.map((r) => ({ ...r, display_name: profileMap.get(r.user_id) ?? null })) as Review[]);
+    }
     setLoading(false);
   };
 
@@ -168,7 +179,7 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
                   </div>
                   <p className="text-sm text-foreground leading-relaxed whitespace-pre-line mb-2">{r.comment}</p>
                   <p className="text-xs text-muted-foreground">
-                    — {r.profiles?.display_name ?? "Anonymous"}
+                    — {r.display_name ?? "Anonymous"}
                   </p>
                 </div>
               ))}
