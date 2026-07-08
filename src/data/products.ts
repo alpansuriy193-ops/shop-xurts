@@ -38,6 +38,8 @@ export interface Product {
   inTheBox?: string[];
   /** Warranty text (elektronik / jam) */
   warranty?: string;
+  /** Available inventory. undefined = plenty, 0 = sold out, <=5 = low stock */
+  stock?: number;
 }
 
 export const collections: Collection[] = [
