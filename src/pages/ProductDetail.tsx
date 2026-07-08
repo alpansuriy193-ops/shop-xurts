@@ -254,6 +254,22 @@ const ProductDetail = () => {
                 ${product.price.toLocaleString()}
               </p>
 
+              {/* Stock status */}
+              {(soldOut || lowStock) && (
+                <div className="mb-6 -mt-4">
+                  {soldOut ? (
+                    <span className="inline-block px-3 py-1.5 text-[10px] font-semibold tracking-[0.25em] uppercase bg-foreground text-background">
+                      Sold Out
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-primary">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      Stok terbatas — hanya tersisa {product.stock} unit
+                    </span>
+                  )}
+                </div>
+              )}
+
               <div className="w-12 h-px bg-border mb-8" />
 
               <p className="text-muted-foreground leading-[1.8] mb-10">
