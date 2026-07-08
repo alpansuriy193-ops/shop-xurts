@@ -198,6 +198,7 @@ export const products: Product[] = [
     ],
     fit: "Relaxed fit with a slight drop shoulder.",
     care: "Machine wash cold with like colors. Tumble dry low.",
+    stock: 3,
   },
   // Sepatu
   {
