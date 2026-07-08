@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, Eye } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Product, collections } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
 import { cn } from "@/lib/utils";
+import { QuickViewDialog } from "./QuickViewDialog";
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +18,9 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const inWishlist = isInWishlist(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const hasSecondImage = product.images.length > 1;
+  const [quickOpen, setQuickOpen] = useState(false);
+  const soldOut = product.stock === 0;
+  const lowStock = typeof product.stock === "number" && product.stock > 0 && product.stock <= 5;
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,7 +32,14 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
     }
   };
 
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setQuickOpen(true);
+  };
+
   return (
+    <>
     <motion.article
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -85,8 +97,31 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             />
           </button>
 
+          {/* Quick view button */}
+          <button
+            onClick={handleQuickView}
+            aria-label="Quick view"
+            className={cn(
+              "absolute top-5 right-16 p-2.5 rounded-full transition-all duration-500",
+              "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
+              "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
+            )}
+          >
+            <Eye className="w-4 h-4 text-foreground" />
+          </button>
+
           {/* Badges */}
           <div className="absolute top-5 left-5 flex flex-col gap-2">
+            {soldOut && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-foreground text-background">
+                Sold Out
+              </span>
+            )}
+            {lowStock && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
+                Stok Terbatas
+              </span>
+            )}
             {product.new && (
               <motion.span
                 initial={{ opacity: 0, x: -10 }}
@@ -109,11 +144,19 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             )}
           </div>
 
+          {/* Sold out overlay */}
+          {soldOut && (
+            <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
+          )}
+
           {/* Quick View Indicator */}
           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-6 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
-            <span className="px-6 py-2.5 text-xs font-medium tracking-[0.15em] uppercase bg-background/95 backdrop-blur-md text-foreground shadow-lg">
-              View Details
-            </span>
+            <button
+              onClick={handleQuickView}
+              className="px-6 py-2.5 text-xs font-medium tracking-[0.15em] uppercase bg-background/95 backdrop-blur-md text-foreground shadow-lg hover:bg-background transition-colors"
+            >
+              Quick View
+            </button>
           </div>
         </div>
 
@@ -150,5 +193,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
         </div>
       </Link>
     </motion.article>
+    <QuickViewDialog product={product} open={quickOpen} onOpenChange={setQuickOpen} />
+    </>
   );
 };
