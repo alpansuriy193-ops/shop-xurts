@@ -448,10 +448,11 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   onClick={handleAddToCart}
+                  disabled={soldOut}
                   className="rounded-none w-full py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
                   <ShoppingBag className="w-4 h-4 mr-3" />
-                  Add to Bag
+                  {soldOut ? "Sold Out" : "Add to Bag"}
                 </Button>
                 <Button
                   variant="outline"
