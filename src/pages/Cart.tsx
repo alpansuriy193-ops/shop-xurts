@@ -1,16 +1,33 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowRight, ShoppingBag, Trash2, Tag, X, Check } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const Cart = () => {
-  const { items, updateQuantity, removeItem, getSubtotal } = useCart();
+  const { items, updateQuantity, removeItem, getSubtotal, getDiscount, coupon, applyCoupon, removeCoupon } = useCart();
+  const [code, setCode] = useState("");
   const subtotal = getSubtotal();
-  const shipping = subtotal > 500 ? 0 : 25;
-  const total = subtotal + shipping;
+  const discount = getDiscount();
+  const freeShip = coupon?.freeShipping || subtotal - discount > 500;
+  const shipping = freeShip ? 0 : 25;
+  const total = Math.max(0, subtotal - discount + shipping);
+
+  const handleApply = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = applyCoupon(code);
+    if (result.ok) {
+      toast.success(result.message);
+      setCode("");
+    } else {
+      toast.error(result.message);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -152,16 +169,75 @@ const Cart = () => {
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>${subtotal.toLocaleString()}</span>
                   </div>
+                  {discount > 0 && coupon && (
+                    <div className="flex justify-between text-sm text-primary">
+                      <span className="flex items-center gap-1.5">
+                        <Tag className="w-3.5 h-3.5" />
+                        Diskon ({coupon.code})
+                      </span>
+                      <span>−${discount.toLocaleString()}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping</span>
                     <span>
                       {shipping === 0 ? "Complimentary" : `$${shipping}`}
                     </span>
                   </div>
-                  {subtotal < 500 && (
+                  {!freeShip && (
                     <p className="text-xs text-muted-foreground">
                       Free shipping on orders over $500
                     </p>
+                  )}
+                </div>
+
+                {/* Promo code */}
+                <div className="mb-6">
+                  {coupon ? (
+                    <div className="flex items-center justify-between gap-3 border border-primary/40 bg-primary/5 px-3 py-2.5">
+                      <div className="flex items-center gap-2 text-xs">
+                        <Check className="w-4 h-4 text-primary" />
+                        <span className="font-semibold tracking-[0.15em] uppercase text-foreground">
+                          {coupon.code}
+                        </span>
+                        <span className="text-muted-foreground">— {coupon.label}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          removeCoupon();
+                          toast("Kupon dihapus.");
+                        }}
+                        aria-label="Remove coupon"
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleApply} className="space-y-2">
+                      <label className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground">
+                        <Tag className="w-3.5 h-3.5" />
+                        Kode Promo
+                      </label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={code}
+                          onChange={(e) => setCode(e.target.value)}
+                          placeholder="Masukkan kode"
+                          className="rounded-none h-11 uppercase tracking-wide"
+                        />
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          className="rounded-none h-11 px-5 text-xs tracking-[0.15em] uppercase"
+                        >
+                          Apply
+                        </Button>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Coba <span className="text-foreground font-medium">XURTS10</span>, <span className="text-foreground font-medium">NEWUSER20</span>, atau <span className="text-foreground font-medium">FREESHIP</span>.
+                      </p>
+                    </form>
                   )}
                 </div>
 
