@@ -287,6 +287,7 @@ export const products: Product[] = [
       { name: "Ink", hex: "#1F2A44" },
     ],
     care: "Dry clean only. Store folded away from direct sunlight.",
+    stock: 0,
   },
   // Elektronik
   {
@@ -356,6 +357,7 @@ export const products: Product[] = [
       "Setup guide",
     ],
     warranty: "2-year limited warranty",
+    stock: 5,
   },
   // Tas
   {
