@@ -38,6 +38,8 @@ export interface Product {
   inTheBox?: string[];
   /** Warranty text (elektronik / jam) */
   warranty?: string;
+  /** Available inventory. undefined = plenty, 0 = sold out, <=5 = low stock */
+  stock?: number;
 }
 
 export const collections: Collection[] = [
@@ -196,6 +198,7 @@ export const products: Product[] = [
     ],
     fit: "Relaxed fit with a slight drop shoulder.",
     care: "Machine wash cold with like colors. Tumble dry low.",
+    stock: 3,
   },
   // Sepatu
   {
@@ -284,6 +287,7 @@ export const products: Product[] = [
       { name: "Ink", hex: "#1F2A44" },
     ],
     care: "Dry clean only. Store folded away from direct sunlight.",
+    stock: 0,
   },
   // Elektronik
   {
@@ -353,6 +357,7 @@ export const products: Product[] = [
       "Setup guide",
     ],
     warranty: "2-year limited warranty",
+    stock: 5,
   },
   // Tas
   {

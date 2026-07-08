@@ -56,6 +56,8 @@ const ProductDetail = () => {
   const relatedProducts = getRelatedProducts(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const sizeLabel = product.collection === "sepatu" ? "Size (EU)" : "Size";
+  const soldOut = product.stock === 0;
+  const lowStock = typeof product.stock === "number" && product.stock > 0 && product.stock <= 5;
 
   const handleWishlistToggle = () => {
     if (inWishlist) {
@@ -74,6 +76,7 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
+    if (soldOut) return;
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: "Pilih ukuran dulu",
@@ -250,6 +253,22 @@ const ProductDetail = () => {
               <p className="text-2xl font-serif text-foreground mb-8">
                 ${product.price.toLocaleString()}
               </p>
+
+              {/* Stock status */}
+              {(soldOut || lowStock) && (
+                <div className="mb-6 -mt-4">
+                  {soldOut ? (
+                    <span className="inline-block px-3 py-1.5 text-[10px] font-semibold tracking-[0.25em] uppercase bg-foreground text-background">
+                      Sold Out
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-primary">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      Stok terbatas — hanya tersisa {product.stock} unit
+                    </span>
+                  )}
+                </div>
+              )}
 
               <div className="w-12 h-px bg-border mb-8" />
 
@@ -429,10 +448,11 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   onClick={handleAddToCart}
+                  disabled={soldOut}
                   className="rounded-none w-full py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
                   <ShoppingBag className="w-4 h-4 mr-3" />
-                  Add to Bag
+                  {soldOut ? "Sold Out" : "Add to Bag"}
                 </Button>
                 <Button
                   variant="outline"
