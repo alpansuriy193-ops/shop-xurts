@@ -56,6 +56,8 @@ const ProductDetail = () => {
   const relatedProducts = getRelatedProducts(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const sizeLabel = product.collection === "sepatu" ? "Size (EU)" : "Size";
+  const soldOut = product.stock === 0;
+  const lowStock = typeof product.stock === "number" && product.stock > 0 && product.stock <= 5;
 
   const handleWishlistToggle = () => {
     if (inWishlist) {
@@ -74,6 +76,7 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
+    if (soldOut) return;
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: "Pilih ukuran dulu",
