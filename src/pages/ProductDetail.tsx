@@ -6,6 +6,7 @@ import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { ProductReviews } from "@/components/ProductReviews";
+import { SizeGuide } from "@/components/SizeGuide";
 import { getProductBySlug, getRelatedProducts, collections } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
@@ -343,9 +344,9 @@ const ProductDetail = () => {
                     <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
                       {sizeLabel}
                     </span>
-                    <button className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
-                      Size guide
-                    </button>
+                    {(product.collection === "fashion" || product.collection === "sepatu") && (
+                      <SizeGuide collection={product.collection} />
+                    )}
                   </div>
                   <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                     {product.sizes.map((size) => {
