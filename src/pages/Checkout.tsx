@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { items, getSubtotal, clearCart } = useCart();
+  const { items, getSubtotal, clearCart, getDiscount, coupon } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -27,8 +27,10 @@ const Checkout = () => {
   });
 
   const subtotal = getSubtotal();
-  const shipping = subtotal > 500 ? 0 : 25;
-  const total = subtotal + shipping;
+  const discount = getDiscount();
+  const freeShip = coupon?.freeShipping || subtotal - discount > 500;
+  const shipping = freeShip ? 0 : 25;
+  const total = Math.max(0, subtotal - discount + shipping);
 
   if (items.length === 0) {
     return (
@@ -353,6 +355,12 @@ const Checkout = () => {
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>${subtotal.toLocaleString()}</span>
                   </div>
+                  {discount > 0 && coupon && (
+                    <div className="flex justify-between text-sm text-primary">
+                      <span>Diskon ({coupon.code})</span>
+                      <span>−${discount.toLocaleString()}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping</span>
                     <span>
