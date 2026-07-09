@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          address: string
+          city: string
+          country: string
+          coupon_code: string | null
+          created_at: string
+          discount: number
+          email: string
+          full_name: string
+          id: string
+          items: Json
+          notes: string | null
+          phone: string | null
+          postal_code: string
+          shipping: number
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          city: string
+          country: string
+          coupon_code?: string | null
+          created_at?: string
+          discount?: number
+          email: string
+          full_name: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          phone?: string | null
+          postal_code: string
+          shipping?: number
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          country?: string
+          coupon_code?: string | null
+          created_at?: string
+          discount?: number
+          email?: string
+          full_name?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          phone?: string | null
+          postal_code?: string
+          shipping?: number
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_reviews: {
         Row: {
           comment: string
