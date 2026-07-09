@@ -356,10 +356,10 @@ const Checkout = () => {
                   className="w-full rounded-none py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
                   {isSubmitting ? (
-                    "Submitting..."
+                    "Memproses..."
                   ) : (
                     <>
-                      Submit Order Request
+                      Place Order — ${total.toLocaleString()}
                       <ArrowRight className="ml-3 w-4 h-4" />
                     </>
                   )}
