@@ -40,11 +40,11 @@ export const UserMenu = () => {
           <p className="text-sm truncate">{displayName}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate("/products")} className="text-xs tracking-[0.1em] uppercase cursor-pointer">
-          <Package className="w-4 h-4 mr-2" /> Shop
+        <DropdownMenuItem onClick={() => navigate("/orders")} className="text-xs tracking-[0.1em] uppercase cursor-pointer">
+          <Package className="w-4 h-4 mr-2" /> Pesanan Saya
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-xs tracking-[0.1em] uppercase text-muted-foreground">
-          <Heart className="w-4 h-4 mr-2" /> Wishlist (via icon)
+        <DropdownMenuItem onClick={() => navigate("/products")} className="text-xs tracking-[0.1em] uppercase cursor-pointer">
+          <Heart className="w-4 h-4 mr-2" /> Shop
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
