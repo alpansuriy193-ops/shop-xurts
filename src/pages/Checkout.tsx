@@ -1,23 +1,26 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { items, getSubtotal, clearCart, getDiscount, coupon } = useCart();
+  const { user, loading: authLoading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    email: user?.email ?? "",
     phone: "",
     address: "",
     city: "",
@@ -61,6 +64,30 @@ const Checkout = () => {
     );
   }
 
+  if (!authLoading && !user) {
+    return (
+      <Layout>
+        <div className="container-narrow py-28 text-center">
+          <Lock className="w-10 h-10 mx-auto mb-6 text-muted-foreground/40" />
+          <h1 className="font-serif text-4xl mb-4">Masuk untuk Checkout</h1>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            Silakan masuk atau daftar terlebih dahulu supaya pesananmu tersimpan di akunmu dan bisa kamu lacak kapan saja.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
+          >
+            <Link to="/auth">
+              Masuk / Daftar
+              <ArrowRight className="ml-3 w-4 h-4" />
+            </Link>
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -70,20 +97,62 @@ const Checkout = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const orderItems = items.map((it) => ({
+      product_id: it.product.id,
+      name: it.product.name,
+      slug: it.product.slug,
+      image: it.product.images[0],
+      price: it.product.price,
+      quantity: it.quantity,
+    }));
+
+    const { data, error } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        full_name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        phone: formData.phone || null,
+        address: formData.address,
+        city: formData.city,
+        postal_code: formData.postalCode,
+        country: formData.country,
+        notes: formData.notes || null,
+        subtotal,
+        discount,
+        shipping,
+        total,
+        coupon_code: coupon?.code ?? null,
+        status: "pending",
+        items: orderItems,
+      })
+      .select("id")
+      .single();
+
+    setIsSubmitting(false);
+
+    if (error || !data) {
+      toast({
+        title: "Gagal membuat pesanan",
+        description: error?.message ?? "Coba lagi sebentar.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     toast({
-      title: "Order Request Submitted",
-      description:
-        "Thank you! We'll contact you shortly to complete your order.",
+      title: "Pesanan berhasil dibuat!",
+      description: `Kode pesanan #${data.id.slice(0, 8).toUpperCase()} tersimpan di akunmu.`,
     });
 
     clearCart();
-    setIsSubmitting(false);
-    navigate("/");
+    navigate("/orders");
   };
 
   return (
@@ -96,22 +165,6 @@ const Checkout = () => {
           </Link>
           <span className="text-border">/</span>
           <span className="text-foreground">Checkout</span>
-        </div>
-      </div>
-
-      {/* Coming Soon Banner */}
-      <div className="bg-primary/5 border-b border-primary/10">
-        <div className="container-full py-4">
-          <div className="flex items-center gap-3 text-sm">
-            <AlertCircle className="w-5 h-5 text-primary" />
-            <p>
-              <span className="font-medium">Online checkout coming soon.</span>{" "}
-              <span className="text-muted-foreground">
-                Please submit your order request below and we'll contact you to
-                complete your purchase.
-              </span>
-            </p>
-          </div>
         </div>
       </div>
 
