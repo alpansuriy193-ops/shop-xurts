@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,6 +34,7 @@ export const Header = () => {
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { items, removeItem } = useWishlist();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,7 +69,7 @@ export const Header = () => {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground">
-                    Collections
+                    {t("collections")}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[400px] gap-1 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -99,24 +102,25 @@ export const Header = () => {
               to="/products"
               className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300 link-underline"
             >
-              Shop All
+              {t("shopAll")}
             </Link>
 
             <Link
               to="/about"
               className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300 link-underline"
             >
-              About
+              {t("about")}
             </Link>
           </div>
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
+            <LanguageSelector />
             {/* Search Icon */}
             <button
               onClick={() => setSearchOpen(true)}
               className="p-2 hover:bg-accent transition-colors duration-300 group"
-              aria-label="Search products"
+              aria-label={t("search")}
             >
               <Search className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
             </button>
@@ -129,7 +133,7 @@ export const Header = () => {
               <SheetTrigger asChild>
                 <button
                   className="relative p-2 hover:bg-accent transition-colors duration-300 group"
-                  aria-label="Open wishlist"
+                  aria-label={t("wishlist")}
                 >
                   <Heart className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
                   <AnimatePresence>
@@ -149,9 +153,9 @@ export const Header = () => {
               <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
                 <SheetHeader className="px-6 py-5 border-b border-border">
                   <SheetTitle className="font-serif text-2xl flex items-baseline gap-2">
-                    Wishlist
+                    {t("wishlist")}
                     <span className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground">
-                      {items.length} {items.length === 1 ? "item" : "items"}
+                      {items.length} {items.length === 1 ? t("item") : t("items")}
                     </span>
                   </SheetTitle>
                 </SheetHeader>
@@ -160,14 +164,14 @@ export const Header = () => {
                   <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
                     <Heart className="w-10 h-10 text-muted-foreground/40 mb-4" />
                     <p className="font-serif text-xl text-foreground mb-2">
-                      Your wishlist is empty
+                      {t("wishlistEmpty")}
                     </p>
                     <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-                      Simpan barang favorit dari parfum, fashion, sepatu, aksesoris, hingga elektronik untuk dilihat lagi nanti.
+                      {t("wishlistDescription")}
                     </p>
                     <SheetClose asChild>
                       <Button asChild className="rounded-none px-8 py-5 text-xs tracking-[0.15em] uppercase">
-                        <Link to="/products">Browse Products</Link>
+                        <Link to="/products">{t("browseProducts")}</Link>
                       </Button>
                     </SheetClose>
                   </div>
@@ -208,7 +212,7 @@ export const Header = () => {
                               <button
                                 onClick={() => removeItem(item.id)}
                                 className="text-muted-foreground hover:text-primary transition-colors p-1"
-                                aria-label={`Remove ${item.name} from wishlist`}
+                          aria-label={`${t("wishlist")}: ${item.name}`}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -223,7 +227,7 @@ export const Header = () => {
                           asChild
                           className="w-full rounded-none py-5 text-xs tracking-[0.15em] uppercase"
                         >
-                          <Link to="/products">Continue Shopping</Link>
+                          <Link to="/products">{t("continueShopping")}</Link>
                         </Button>
                       </SheetClose>
                     </div>
@@ -282,7 +286,7 @@ export const Header = () => {
               <div className="py-8 space-y-6">
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-muted-foreground/50 px-2 mb-3">
-                    Collections
+                    {t("collections")}
                   </p>
                   {collections.slice(0, 6).map((collection, i) => (
                     <motion.div
@@ -303,9 +307,9 @@ export const Header = () => {
                 </div>
                 <div className="pt-6 border-t border-border space-y-1">
                   {[
-                    { to: "/products", label: "Shop All" },
-                    { to: "/about", label: "About" },
-                    { to: "/cart", label: "Shopping Bag" },
+                    { to: "/products", label: t("shopAll") },
+                    { to: "/about", label: t("about") },
+                    { to: "/cart", label: t("shoppingBag") },
                   ].map((link, i) => (
                     <motion.div
                       key={link.to}

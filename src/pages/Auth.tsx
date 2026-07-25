@@ -47,7 +47,8 @@ const Auth = () => {
       toast({ title: "Login gagal", description: error.message });
     } else {
       toast({ title: "Welcome back!" });
-      navigate("/");
+      const { data: isAdmin } = await (supabase as any).rpc("is_admin");
+      navigate(isAdmin ? "/admin" : "/");
     }
   };
 

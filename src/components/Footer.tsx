@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { collections } from "@/data/products";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export const Footer = () => {
+  const { t } = useLanguage();
   return (
     <footer className="bg-foreground text-background">
       {/* Top bar */}
@@ -17,19 +19,19 @@ export const Footer = () => {
                 xurts_shop
               </Link>
               <p className="mt-3 text-sm text-background/50 leading-relaxed max-w-xs">
-                Parfum, fashion, sepatu, aksesoris, dan elektronik pilihan untuk gaya hidup modern.
+                {t("footerDescription")}
               </p>
             </div>
 
             {/* Newsletter in footer */}
             <div className="max-w-sm w-full">
               <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-background/40 mb-3">
-                Stay Connected
+                {t("stayConnected")}
               </p>
               <form className="flex gap-0">
                 <input
                   type="email"
-                  placeholder="Your email"
+                  placeholder={t("yourEmail")}
                   className="flex-1 h-12 px-4 text-sm bg-background/5 border border-background/15 text-background placeholder:text-background/30 focus:outline-none focus:border-background/40 transition-colors"
                 />
                 <button
@@ -50,7 +52,7 @@ export const Footer = () => {
           {/* Collections */}
           <div>
             <h4 className="text-[11px] font-semibold tracking-[0.25em] uppercase text-background/40 mb-5">
-              Collections
+              {t("collections")}
             </h4>
             <ul className="space-y-3">
               {collections.slice(0, 6).map((collection) => (
@@ -69,7 +71,7 @@ export const Footer = () => {
           {/* Explore */}
           <div>
             <h4 className="text-[11px] font-semibold tracking-[0.25em] uppercase text-background/40 mb-5">
-              Explore
+              {t("explore")}
             </h4>
             <ul className="space-y-3">
               <li>
@@ -77,7 +79,7 @@ export const Footer = () => {
                   to="/products"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
-                  Shop All
+                  {t("shopAll")}
                 </Link>
               </li>
               <li>
@@ -85,7 +87,7 @@ export const Footer = () => {
                   to="/about"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
-                  Our Story
+                  {t("ourStory")}
                 </Link>
               </li>
               <li>
@@ -93,7 +95,7 @@ export const Footer = () => {
                   to="/cart"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
-                  Shopping Bag
+                  {t("shoppingBag")}
                 </Link>
               </li>
             </ul>
@@ -102,7 +104,7 @@ export const Footer = () => {
           {/* Support */}
           <div>
             <h4 className="text-[11px] font-semibold tracking-[0.25em] uppercase text-background/40 mb-5">
-              Support
+              {t("support")}
             </h4>
             <ul className="space-y-3">
               <li>
@@ -110,7 +112,7 @@ export const Footer = () => {
                   href="#"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
-                  Shipping & Returns
+                  {t("shippingReturns")}
                 </a>
               </li>
               <li>
@@ -118,7 +120,7 @@ export const Footer = () => {
                   href="#"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
-                  Care Guide
+                  {t("careGuide")}
                 </a>
               </li>
               <li>
@@ -135,7 +137,7 @@ export const Footer = () => {
           {/* Contact */}
           <div>
             <h4 className="text-[11px] font-semibold tracking-[0.25em] uppercase text-background/40 mb-5">
-              Contact
+              {t("contact")}
             </h4>
             <ul className="space-y-3">
               <li>
@@ -167,19 +169,19 @@ export const Footer = () => {
               href="#"
               className="text-xs text-background/30 hover:text-background/60 transition-colors duration-300"
             >
-              Privacy Policy
+              {t("privacy")}
             </a>
             <a
               href="#"
               className="text-xs text-background/30 hover:text-background/60 transition-colors duration-300"
             >
-              Terms of Service
+              {t("terms")}
             </a>
             <a
               href="#"
               className="text-xs text-background/30 hover:text-background/60 transition-colors duration-300"
             >
-              Cookie Policy
+              {t("cookies")}
             </a>
           </div>
         </div>

@@ -40,6 +40,8 @@ export interface Product {
   warranty?: string;
   /** Available inventory. undefined = plenty, 0 = sold out, <=5 = low stock */
   stock?: number;
+  marketplace?: "Shopee" | "Tokopedia" | "Amazon";
+  affiliateLink?: string;
 }
 
 export const collections: Collection[] = [
@@ -408,6 +410,15 @@ export const products: Product[] = [
     featured: true,
   },
 ];
+
+products.push(
+  { id: "affiliate-spain-jersey", name: "JERSEY FANTASY SUPORTER SPAIN/SPANYOL", slug: "jersey-spain-fullprint", collection: "fashion", price: 66500, description: "Full printing, gratis custom nama dan nomor", longDescription: "Jersey supporter Spain/Spanyol full printing dengan custom nama dan nomor.", materials: "Jersey full print", images: ["https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80"], new: true, marketplace: "Shopee", affiliateLink: "https://s.shopee.co.id/4AyTBPw8ok?share_channel_code=1" },
+  { id: "affiliate-kahf-facewash", name: "Kahf Skin Energizing Face Wash", slug: "kahf-energizing-face-wash", collection: "beauty", price: 29601, description: "Pembersih wajah pria cerah", longDescription: "Kahf Skin Energizing and Brightening Face Wash dari Merah Jingga Official.", materials: "Face wash", images: ["https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?w=800&q=80"], marketplace: "Shopee", affiliateLink: "https://s.shopee.co.id/1gH8CuhARe?share_channel_code=1" },
+  { id: "affiliate-mykonos-decant", name: "MYKONOS Decant Original", slug: "mykonos-decant-original", collection: "parfum", price: 65890, description: "Varian decant 3ml, 5ml, dan 10ml", longDescription: "Parfum MYKONOS original share in jar dalam pilihan ukuran decant.", materials: "Parfum decant", images: ["https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80"], marketplace: "Shopee", affiliateLink: "https://s.shopee.co.id/6ffoA7KDsf?share_channel_code=1" },
+  { id: "affiliate-oppo-a6t", name: "OPPO A6t Pro 8GB/128GB", slug: "oppo-a6t-pro", collection: "elektronik", price: 0, description: "Smartphone Snapdragon 685, baterai 7000mAh", longDescription: "OPPO A6t Pro Online Exclusive dengan 45W SUPERVOOC dan IP69.", materials: "Smartphone", images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80"], marketplace: "Tokopedia", affiliateLink: "https://vt.tokopedia.com/t/ZS9rYkEQrpMqc-jZUED/" },
+  { id: "affiliate-salomon-xt4", name: "SALOMON XT-4 OG", slug: "salomon-xt4-og", collection: "sepatu", price: 0, description: "Unisex sportstyle trail running shoes", longDescription: "SALOMON XT-4 OG untuk outdoor, casual, dan sportstyle.", materials: "Sport shoes", images: ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80"], marketplace: "Tokopedia", affiliateLink: "https://vt.tokopedia.com/t/ZS9rYBrrhTsLk-v2TQc/" },
+  { id: "affiliate-infinix-smart20", name: "Infinix Smart 20 LTE 4GB+64GB", slug: "infinix-smart-20-lte", collection: "elektronik", price: 0, description: "Layar 6.78 inci, baterai 5200mAh", longDescription: "Infinix Smart 20 LTE dengan garansi resmi 12 bulan.", materials: "Smartphone", images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80"], marketplace: "Tokopedia", affiliateLink: "https://vt.tokopedia.com/t/ZS9rYBJQHEnDf-s9X8e/" }
+);
 
 export const getProductsByCollection = (collectionSlug: string): Product[] => {
   return products.filter((product) => product.collection === collectionSlug);

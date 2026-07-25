@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-const messages = [
-  { icon: "✦", text: "Gratis ongkir ke seluruh dunia untuk pesanan di atas $500" },
-  { icon: "✦", text: "Pakai kode XURTS10 — diskon 10% untuk semua kategori" },
-  { icon: "✦", text: "Pengguna baru? Kode NEWUSER20 potongan 20% di pesanan pertama" },
-];
-
+const messageKeys = ["freeShipping", "discount", "newUser"];
 const STORAGE_KEY = "xurts_announcement_dismissed_v1";
 
 export const AnnouncementBar = () => {
+  const { t } = useLanguage();
   const [dismissed, setDismissed] = useState(true);
   const [index, setIndex] = useState(0);
 
@@ -20,18 +17,11 @@ export const AnnouncementBar = () => {
 
   useEffect(() => {
     if (dismissed) return;
-    const id = setInterval(() => {
-      setIndex((i) => (i + 1) % messages.length);
-    }, 5000);
+    const id = setInterval(() => setIndex((value) => (value + 1) % messageKeys.length), 5000);
     return () => clearInterval(id);
   }, [dismissed]);
 
   if (dismissed) return null;
-
-  const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, "1");
-    setDismissed(true);
-  };
 
   return (
     <div className="relative bg-foreground text-background">
@@ -48,15 +38,11 @@ export const AnnouncementBar = () => {
                 transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="absolute inset-0 flex items-center justify-center whitespace-nowrap"
               >
-                {messages[index].text}
+                {t(messageKeys[index])}
               </motion.p>
             </AnimatePresence>
           </div>
-          <button
-            onClick={handleDismiss}
-            aria-label="Dismiss announcement"
-            className="p-1 hover:bg-background/10 transition-colors flex-shrink-0"
-          >
+          <button onClick={() => { localStorage.setItem(STORAGE_KEY, "1"); setDismissed(true); }} aria-label={t("dismissAnnouncement")} className="p-1 hover:bg-background/10 transition-colors flex-shrink-0">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
