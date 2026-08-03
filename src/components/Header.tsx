@@ -212,7 +212,7 @@ export const Header = () => {
                               <button
                                 onClick={() => removeItem(item.id)}
                                 className="text-muted-foreground hover:text-primary transition-colors p-1"
-                          aria-label={`${t("wishlist")}: ${item.name}`}
+                          aria-label={`${t("headerWishlistRemove")}: ${item.name}`}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
