@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface SizeGuideProps {
   collection: string;
@@ -42,6 +43,7 @@ const shoeRows = [
 ];
 
 export const SizeGuide = ({ collection }: SizeGuideProps) => {
+  const { t } = useLanguage();
   const isShoe = collection === "sepatu";
   const isFashion = collection === "fashion";
   const defaultTab = isShoe ? "shoes" : "fashion";
@@ -54,14 +56,14 @@ export const SizeGuide = ({ collection }: SizeGuideProps) => {
           className="inline-flex items-center gap-1.5 text-[11px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors"
         >
           <Ruler className="w-3.5 h-3.5" />
-          Size guide
+          {t("sizeGuideButton")}
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl rounded-none">
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">Size Guide</DialogTitle>
+          <DialogTitle className="font-serif text-2xl">{t("sizeGuideTitle")}</DialogTitle>
           <DialogDescription className="text-xs tracking-[0.1em] uppercase text-muted-foreground">
-            Panduan ukuran xurts_shop — semua pengukuran dalam sentimeter.
+            {t("sizeGuideDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -69,12 +71,12 @@ export const SizeGuide = ({ collection }: SizeGuideProps) => {
           <TabsList className="rounded-none bg-muted/50 mb-6">
             {(isFashion || (!isShoe && !isFashion)) && (
               <TabsTrigger value="fashion" className="rounded-none text-xs tracking-[0.15em] uppercase">
-                Fashion
+                {t("sizeGuideFashion")}
               </TabsTrigger>
             )}
             {(isShoe || (!isShoe && !isFashion)) && (
               <TabsTrigger value="shoes" className="rounded-none text-xs tracking-[0.15em] uppercase">
-                Sepatu
+                {t("sizeGuideShoes")}
               </TabsTrigger>
             )}
           </TabsList>
@@ -83,10 +85,10 @@ export const SizeGuide = ({ collection }: SizeGuideProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">Size</TableHead>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">Dada (cm)</TableHead>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">Pinggang (cm)</TableHead>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">Pinggul (cm)</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideSize")}</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideChest")}</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideWaist")}</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideHips")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -101,9 +103,9 @@ export const SizeGuide = ({ collection }: SizeGuideProps) => {
               </TableBody>
             </Table>
             <div className="text-xs text-muted-foreground leading-relaxed space-y-1.5 pt-2">
-              <p><span className="text-foreground font-medium">Dada:</span> ukur bagian terlebar dari dada.</p>
-              <p><span className="text-foreground font-medium">Pinggang:</span> ukur bagian tersempit pinggang.</p>
-              <p><span className="text-foreground font-medium">Pinggul:</span> ukur bagian terlebar pinggul.</p>
+              <p>{t("sizeGuideChestDesc")}</p>
+              <p>{t("sizeGuideWaistDesc")}</p>
+              <p>{t("sizeGuideHipsDesc")}</p>
             </div>
           </TabsContent>
 
@@ -111,10 +113,10 @@ export const SizeGuide = ({ collection }: SizeGuideProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">EU</TableHead>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">US</TableHead>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">UK</TableHead>
-                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">Panjang (cm)</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideEu")}</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideUs")}</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideUk")}</TableHead>
+                  <TableHead className="text-[11px] tracking-[0.15em] uppercase">{t("sizeGuideLength")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -129,7 +131,7 @@ export const SizeGuide = ({ collection }: SizeGuideProps) => {
               </TableBody>
             </Table>
             <p className="text-xs text-muted-foreground leading-relaxed pt-2">
-              Ukur panjang telapak kaki dari tumit ke ujung jari terpanjang, lalu cocokkan dengan kolom panjang (cm).
+              {t("sizeGuideShoeDesc")}
             </p>
           </TabsContent>
         </Tabs>
