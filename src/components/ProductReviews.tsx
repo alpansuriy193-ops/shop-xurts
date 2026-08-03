@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Review {
   id: string;
@@ -22,13 +23,13 @@ interface Review {
   display_name?: string | null;
 }
 
-const reviewSchema = z.object({
+const makeReviewSchema = (minMsg: string) => z.object({
   rating: z.number().int().min(1).max(5),
   title: z.string().trim().max(120).optional(),
-  comment: z.string().trim().min(3, "Komentar minimal 3 karakter").max(1000),
+  comment: z.string().trim().min(3, minMsg).max(1000),
 });
 
-const StarRow = ({ value, size = 16, onChange }: { value: number; size?: number; onChange?: (v: number) => void }) => (
+const StarRow = ({ value, size = 16, onChange, starAriaLabel }: { value: number; size?: number; onChange?: (v: number) => void; starAriaLabel?: (n: number) => string }) => (
   <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map((n) => (
       <button
@@ -37,7 +38,7 @@ const StarRow = ({ value, size = 16, onChange }: { value: number; size?: number;
         disabled={!onChange}
         onClick={() => onChange?.(n)}
         className={cn(onChange && "cursor-pointer hover:scale-110 transition-transform", !onChange && "cursor-default")}
-        aria-label={`${n} star`}
+        aria-label={starAriaLabel ? starAriaLabel(n) : `${n} star`}
       >
         <Star
           style={{ width: size, height: size }}
@@ -51,6 +52,8 @@ const StarRow = ({ value, size = 16, onChange }: { value: number; size?: number;
 export const ProductReviews = ({ productId }: { productId: string }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
+  const reviewSchema = makeReviewSchema(t("reviewCommentTooShort"));
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(5);
@@ -87,7 +90,7 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
     if (!user) return;
     const parsed = reviewSchema.safeParse({ rating, title: title || undefined, comment });
     if (!parsed.success) {
-      toast({ title: "Review tidak valid", description: parsed.error.issues[0]?.message });
+      toast({ title: t("reviewInvalidTitle"), description: parsed.error.issues[0]?.message });
       return;
     }
     setSubmitting(true);
@@ -97,9 +100,9 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
     );
     setSubmitting(false);
     if (error) {
-      toast({ title: "Gagal mengirim review", description: error.message });
+      toast({ title: t("reviewFailedTitle"), description: error.message });
     } else {
-      toast({ title: "Review terkirim", description: "Terima kasih atas ulasanmu." });
+      toast({ title: t("reviewSuccessTitle"), description: t("reviewSuccessDesc") });
       setTitle("");
       setComment("");
       setRating(5);
@@ -114,7 +117,7 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
     <section className="py-16 md:py-20 border-t border-border">
       <div className="container-full">
         <div className="max-w-4xl">
-          <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">Customer Reviews</p>
+          <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">{t("reviewCustomerReviews")}</p>
           <div className="flex items-baseline gap-6 mb-10">
             <h2 className="font-serif text-3xl md:text-4xl text-foreground">
               {reviews.length > 0 ? avg.toFixed(1) : "—"}
@@ -123,7 +126,7 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
             <div className="flex items-center gap-3">
               <StarRow value={Math.round(avg)} size={18} />
               <span className="text-sm text-muted-foreground">
-                {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                {reviews.length} {reviews.length === 1 ? t("reviewCount_one") : t("reviewCount_other")}
               </span>
             </div>
           </div>
@@ -132,28 +135,28 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
           <div className="mb-12 pb-12 border-b border-border">
             {user ? (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <h3 className="font-serif text-xl">{myReview ? "Update your review" : "Write a review"}</h3>
+                <h3 className="font-serif text-xl">{myReview ? t("reviewUpdateYourReview") : t("reviewWriteAReview")}</h3>
                 <div className="space-y-2">
-                  <Label className="text-[11px] tracking-[0.2em] uppercase">Rating</Label>
-                  <StarRow value={rating} size={24} onChange={setRating} />
+                  <Label className="text-[11px] tracking-[0.2em] uppercase">{t("reviewRating")}</Label>
+                  <StarRow value={rating} size={24} onChange={setRating} starAriaLabel={(n) => t("reviewStarAria", { n })} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="rev-title" className="text-[11px] tracking-[0.2em] uppercase">Title (opsional)</Label>
-                  <Input id="rev-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className="rounded-none h-11" placeholder="Ringkasan singkat" />
+                  <Label htmlFor="rev-title" className="text-[11px] tracking-[0.2em] uppercase">{t("reviewTitleLabel")}</Label>
+                  <Input id="rev-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className="rounded-none h-11" placeholder={t("reviewTitlePlaceholder")} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="rev-comment" className="text-[11px] tracking-[0.2em] uppercase">Review</Label>
-                  <Textarea id="rev-comment" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={1000} rows={4} required className="rounded-none" placeholder="Bagaimana pengalamanmu dengan produk ini?" />
+                  <Label htmlFor="rev-comment" className="text-[11px] tracking-[0.2em] uppercase">{t("reviewCommentLabel")}</Label>
+                  <Textarea id="rev-comment" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={1000} rows={4} required className="rounded-none" placeholder={t("reviewCommentPlaceholder")} />
                 </div>
                 <Button type="submit" disabled={submitting} className="rounded-none px-8 py-5 text-xs tracking-[0.15em] uppercase">
-                  {submitting ? "Mengirim..." : myReview ? "Update Review" : "Submit Review"}
+                  {submitting ? t("reviewSubmitting") : myReview ? t("reviewUpdateButton") : t("reviewSubmitButton")}
                 </Button>
               </form>
             ) : (
               <div className="text-center py-6 bg-muted/30 border border-border">
-                <p className="text-sm text-muted-foreground mb-4">Sign in untuk menulis review produk ini.</p>
+                <p className="text-sm text-muted-foreground mb-4">{t("reviewSignInPrompt")}</p>
                 <Button asChild className="rounded-none px-8 py-5 text-xs tracking-[0.15em] uppercase">
-                  <Link to="/auth">Sign In to Review</Link>
+                  <Link to="/auth">{t("reviewSignInButton")}</Link>
                 </Button>
               </div>
             )}
@@ -161,9 +164,9 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
 
           {/* Reviews list */}
           {loading ? (
-            <p className="text-sm text-muted-foreground">Loading reviews...</p>
+            <p className="text-sm text-muted-foreground">{t("reviewLoading")}</p>
           ) : reviews.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Belum ada review. Jadilah yang pertama!</p>
+            <p className="text-sm text-muted-foreground">{t("reviewNoReviews")}</p>
           ) : (
             <div className="space-y-8">
               {reviews.map((r) => (
@@ -179,7 +182,7 @@ export const ProductReviews = ({ productId }: { productId: string }) => {
                   </div>
                   <p className="text-sm text-foreground leading-relaxed whitespace-pre-line mb-2">{r.comment}</p>
                   <p className="text-xs text-muted-foreground">
-                    — {r.display_name ?? "Anonymous"}
+                    — {r.display_name ?? t("reviewAnonymous")}
                   </p>
                 </div>
               ))}
