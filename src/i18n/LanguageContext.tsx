@@ -1,10 +1,15 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import type { Dictionary, Language, TranslationMap } from "./dict/types";
+import { home } from "./dict/home";
+import { catalog } from "./dict/catalog";
+import { product } from "./dict/product";
+import { checkout } from "./dict/checkout";
+import { account } from "./dict/account";
+import { about } from "./dict/about";
 
-export type Language = "id" | "en" | "zh" | "ru";
+export type { Language };
 
-type TranslationMap = Record<string, string>;
-
-const translations: Record<Language, TranslationMap> = {
+const common: Dictionary = {
   id: {
     collections: "Koleksi", shopAll: "Belanja Semua", about: "Tentang Kami", search: "Cari produk",
     wishlist: "Favorit", item: "produk", items: "produk", wishlistEmpty: "Daftar favoritmu masih kosong",
