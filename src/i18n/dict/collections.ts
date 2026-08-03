@@ -58,7 +58,7 @@ export const collectionsDict: Dictionary = {
   },
   ru: {
     "collection_parfum": "Парфюмерия",
-    "collectionDesc_parfum": "Характерные аромат  ы, оставляющие след",
+    "collectionDesc_parfum": "Характерные ароматы, оставляющие след",
     "collection_fashion": "Одежда",
     "collectionDesc_fashion": "Современные силуэты с вечным характером",
     "collection_sepatu": "Обувь",
