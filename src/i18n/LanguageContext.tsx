@@ -6,6 +6,7 @@ import { product } from "./dict/product";
 import { checkout } from "./dict/checkout";
 import { account } from "./dict/account";
 import { about } from "./dict/about";
+import { collectionsDict } from "./dict/collections";
 
 export type { Language };
 
@@ -59,7 +60,7 @@ const common: Dictionary = {
   },
 };
 
-const dictionaries: Dictionary[] = [common, home, catalog, product, checkout, account, about];
+const dictionaries: Dictionary[] = [common, home, catalog, product, checkout, account, about, collectionsDict];
 
 const merge = (language: Language): TranslationMap =>
   Object.assign({}, ...dictionaries.map((dictionary) => dictionary[language] ?? {}));
