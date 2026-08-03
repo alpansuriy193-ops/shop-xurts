@@ -1,6 +1,7 @@
 import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface QuantitySelectorProps {
   quantity: number;
@@ -17,6 +18,7 @@ export const QuantitySelector = ({
   max = 10,
   className,
 }: QuantitySelectorProps) => {
+  const { t } = useLanguage();
   const decrease = () => {
     if (quantity > min) {
       onQuantityChange(quantity - 1);
@@ -30,12 +32,13 @@ export const QuantitySelector = ({
   };
 
   return (
-    <div className={cn("flex items-center gap-0 border border-border", className)}>
+    <div className={cn("flex items-center gap-0 border border-border", className)} aria-label={t("qtyLabel")}>
       <Button
         variant="ghost"
         size="icon"
         onClick={decrease}
         disabled={quantity <= min}
+        aria-label={t("qtyLabel")}
         className="h-11 w-11 rounded-none hover:bg-accent disabled:opacity-30"
       >
         <Minus className="w-4 h-4" />
@@ -48,6 +51,7 @@ export const QuantitySelector = ({
         size="icon"
         onClick={increase}
         disabled={quantity >= max}
+        aria-label={t("qtyLabel")}
         className="h-11 w-11 rounded-none hover:bg-accent disabled:opacity-30"
       >
         <Plus className="w-4 h-4" />
