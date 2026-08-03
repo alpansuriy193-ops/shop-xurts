@@ -14,6 +14,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { QuantitySelector } from "./QuantitySelector";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface QuickViewDialogProps {
   product: Product | null;
@@ -22,6 +23,7 @@ interface QuickViewDialogProps {
 }
 
 export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialogProps) => {
+  const { t } = useLanguage();
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
   const { addItem: addToCart } = useCart();
@@ -37,7 +39,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
   const handleAdd = () => {
     if (soldOut) return;
     addToCart(product, qty);
-    toast.success(`${qty} × ${product.name} ditambahkan ke keranjang`);
+    toast.success(t("quickViewAddedToast", { count: qty, name: product.name }));
     onOpenChange(false);
     setQty(1);
   };
@@ -63,7 +65,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
             {soldOut && (
               <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
                 <span className="px-4 py-2 text-xs font-semibold tracking-[0.25em] uppercase bg-foreground text-background">
-                  Sold Out
+                  {t("quickViewSoldOut")}
                 </span>
               </div>
             )}
@@ -99,7 +101,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
 
             {lowStock && (
               <p className="text-xs tracking-[0.15em] uppercase text-primary mb-4">
-                Hanya tersisa {product.stock} unit
+                {t("quickViewOnlyLeft", { count: product.stock })}
               </p>
             )}
 
@@ -110,7 +112,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
             {!soldOut && (
               <div className="mb-4">
                 <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-2">
-                  Quantity
+                  {t("quickViewQuantity")}
                 </span>
                 <QuantitySelector
                   quantity={qty}
@@ -127,7 +129,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
                 className="rounded-none py-5 text-xs tracking-[0.15em] uppercase btn-premium"
               >
                 <ShoppingBag className="w-4 h-4 mr-2" />
-                {soldOut ? "Sold Out" : "Add to Bag"}
+                {soldOut ? t("quickViewSoldOut") : t("quickViewAddToBag")}
               </Button>
               <div className="grid grid-cols-2 gap-2">
                 <Button
@@ -136,7 +138,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
                   className="rounded-none py-5 text-xs tracking-[0.1em] uppercase"
                 >
                   <Heart className={cn("w-4 h-4 mr-2", inWishlist && "fill-primary text-primary")} />
-                  {inWishlist ? "Saved" : "Wishlist"}
+                  {inWishlist ? t("quickViewSaved") : t("quickViewWishlist")}
                 </Button>
                 <Button
                   asChild
@@ -145,7 +147,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
                   className="rounded-none py-5 text-xs tracking-[0.1em] uppercase"
                 >
                   <Link to={`/product/${product.slug}`}>
-                    Full Detail
+                    {t("quickViewFullDetail")}
                     <ArrowRight className="w-3.5 h-3.5 ml-2" />
                   </Link>
                 </Button>

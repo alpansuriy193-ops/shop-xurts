@@ -4,7 +4,7 @@ import { collections } from "@/data/products";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export const Footer = () => {
-  const { t } = useLanguage();
+  const { t, tCollection } = useLanguage();
   return (
     <footer className="bg-foreground text-background">
       {/* Top bar */}
@@ -61,7 +61,7 @@ export const Footer = () => {
                     to={`/products?collection=${collection.slug}`}
                     className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                   >
-                    {collection.name}
+                    {tCollection(collection.slug, collection.name)}
                   </Link>
                 </li>
               ))}
@@ -150,7 +150,7 @@ export const Footer = () => {
               </li>
               <li>
                 <p className="text-sm text-background/40 leading-relaxed">
-                  Mon–Fri, 9am–6pm CET
+                  {t("footerHours")}
                 </p>
               </li>
             </ul>
@@ -162,7 +162,7 @@ export const Footer = () => {
       <div className="border-t border-background/10">
         <div className="container-full py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-background/30">
-            © {new Date().getFullYear()} xurts_shop. All rights reserved.
+            © {new Date().getFullYear()} xurts_shop. {t("rightsReserved")}
           </p>
           <div className="flex gap-8">
             <a

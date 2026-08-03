@@ -7,8 +7,10 @@ import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { collections, getNewProducts, products } from "@/data/products";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const Index = () => {
+  const { t } = useLanguage();
   const newProducts = getNewProducts();
   const latestProducts = products.slice(0, 4);
   const displayedCollections = collections.slice(0, 6);
@@ -60,16 +62,15 @@ const Index = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/70 mb-6"
             >
-              Curated for Modern Living
+              {t("homeHeroEyebrow")}
             </motion.p>
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white mb-8 leading-[0.95] tracking-tight">
-              Style with
+              {t("homeHeroTitle1")}
               <br />
-              <span className="italic font-normal">Intention</span>
+              <span className="italic font-normal">{t("homeHeroTitleItalic")}</span>
             </h1>
             <p className="text-base md:text-lg text-white/80 mb-10 leading-relaxed max-w-lg">
-              Parfum, fashion, sepatu, aksesoris, dan elektronik pilihan —
-              dikurasi untuk melengkapi setiap sisi keseharianmu.
+              {t("homeHeroDescription")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -78,7 +79,7 @@ const Index = () => {
                 className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
               >
                 <Link to="/products">
-                  Shop Now
+                  {t("homeShopNow")}
                   <ArrowRight className="ml-3 w-4 h-4" />
                 </Link>
               </Button>
@@ -92,7 +93,7 @@ const Index = () => {
             transition={{ delay: 1.5 }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
           >
-            <span className="text-[10px] tracking-[0.3em] uppercase text-white/50">Scroll</span>
+            <span className="text-[10px] tracking-[0.3em] uppercase text-white/50">{t("homeScroll")}</span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -130,14 +131,13 @@ const Index = () => {
               className="md:py-12"
             >
               <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
-                Featured Collection
+                {t("homeFeaturedCollectionLabel")}
               </p>
               <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-foreground mb-6 leading-[0.95]">
                 {featuredCollection.name}
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-md">
-                {featuredCollection.description}. Explore our curated edit of {featuredCollection.name.toLowerCase()},
-                thoughtfully selected for the details that make every day feel considered.
+                {t("homeFeaturedCollectionDescription", { description: featuredCollection.description, name: featuredCollection.name.toLowerCase() })}
               </p>
               <Button
                 asChild
@@ -145,7 +145,7 @@ const Index = () => {
                 className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
               >
                 <Link to={`/products?collection=${featuredCollection.slug}`}>
-                  Shop {featuredCollection.name}
+                  {t("homeShopCollection", { name: featuredCollection.name })}
                   <ArrowRight className="ml-3 w-4 h-4" />
                 </Link>
               </Button>
@@ -165,17 +165,17 @@ const Index = () => {
               transition={{ duration: 0.6 }}
             >
               <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-                Just Arrived
+                {t("homeJustArrived")}
               </p>
               <h2 className="font-serif text-4xl md:text-5xl text-foreground">
-                Latest Products
+                {t("homeLatestProducts")}
               </h2>
             </motion.div>
             <Link
               to="/products"
               className="hidden md:flex items-center gap-3 text-sm font-medium tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors group"
             >
-              View All
+              {t("homeViewAll")}
               <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
@@ -192,7 +192,7 @@ const Index = () => {
               variant="outline"
               className="rounded-none px-8 py-5 text-sm tracking-[0.15em] uppercase"
             >
-              <Link to="/products">View All Products</Link>
+              <Link to="/products">{t("homeViewAllProducts")}</Link>
             </Button>
           </div>
         </div>
@@ -209,10 +209,10 @@ const Index = () => {
             className="text-center mb-16"
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-              Browse By
+              {t("homeBrowseBy")}
             </p>
             <h2 className="font-serif text-4xl md:text-5xl text-foreground">
-              Collections
+              {t("homeCollections")}
             </h2>
           </motion.div>
 
@@ -275,17 +275,15 @@ const Index = () => {
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-6">
-              About Us
+              {t("homeAboutUsLabel")}
             </p>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.3] mb-8">
-              We believe in the beauty of slow living—in objects made with care,
-              materials that age gracefully, and spaces that invite{" "}
-              <span className="italic">pause</span>.
+              {t("homeAboutUsTitle", { pause: "" }).split("{pause}")[0]}
+              <span className="italic">{t("homeAboutUsTitlePause")}</span>
+              {t("homeAboutUsTitle", { pause: "" }).split("{pause}")[1]}
             </h2>
             <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              Every piece in our collection is selected for its material integrity, 
-              its maker's story, and its ability to endure beautifully. We work with 
-              artisans who share our commitment to craft and sustainability.
+              {t("homeAboutUsDescription")}
             </p>
             <Button
               asChild
@@ -294,7 +292,7 @@ const Index = () => {
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase"
             >
               <Link to="/about">
-                Read Our Story
+                {t("homeReadOurStory")}
                 <ArrowRight className="ml-3 w-4 h-4" />
               </Link>
             </Button>
@@ -313,13 +311,13 @@ const Index = () => {
             className="text-center mb-12"
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-              Follow Us
+              {t("homeFollowUs")}
             </p>
             <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4">
               @xurts_shop
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Join our community and get inspired by curated spaces and behind-the-scenes moments.
+              {t("homeInstagramDescription")}
             </p>
           </motion.div>
 
@@ -339,7 +337,7 @@ const Index = () => {
               >
                 <img
                   src={image}
-                  alt="Instagram post"
+                  alt={t("homeInstagramAlt")}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/40 transition-colors duration-300 flex items-center justify-center">

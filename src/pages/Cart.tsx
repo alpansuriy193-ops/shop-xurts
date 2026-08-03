@@ -8,8 +8,16 @@ import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
+
+const couponLabelKey: Record<string, string> = {
+  XURTS10: "cartCouponLabel10",
+  NEWUSER20: "cartCouponLabel20",
+  FREESHIP: "cartCouponLabelFreeShip",
+};
 
 const Cart = () => {
+  const { t } = useLanguage();
   const { items, updateQuantity, removeItem, getSubtotal, getDiscount, coupon, applyCoupon, removeCoupon } = useCart();
   const [code, setCode] = useState("");
   const subtotal = getSubtotal();
@@ -18,14 +26,20 @@ const Cart = () => {
   const shipping = freeShip ? 0 : 25;
   const total = Math.max(0, subtotal - discount + shipping);
 
+  const translatedCouponLabel = (couponCode: string) => {
+    const key = couponLabelKey[couponCode];
+    return key ? t(key) : couponCode;
+  };
+
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
+    const normalized = code.trim().toUpperCase();
     const result = applyCoupon(code);
     if (result.ok) {
-      toast.success(result.message);
+      toast.success(t("cartCouponApplied", { code: normalized, label: translatedCouponLabel(normalized) }));
       setCode("");
     } else {
-      toast.error(result.message);
+      toast.error(normalized ? t("cartCouponInvalid") : t("cartCouponEmpty"));
     }
   };
 
@@ -39,10 +53,9 @@ const Cart = () => {
             transition={{ duration: 0.6 }}
           >
             <ShoppingBag className="w-16 h-16 mx-auto mb-6 text-muted-foreground/30" />
-            <h1 className="font-serif text-4xl mb-4">Your Bag is Empty</h1>
+            <h1 className="font-serif text-4xl mb-4">{t("cartEmptyTitle")}</h1>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Discover our curated collection of handcrafted home goods and find
-              pieces that speak to you.
+              {t("cartEmptyDescription")}
             </p>
             <Button
               asChild
@@ -50,7 +63,7 @@ const Cart = () => {
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
             >
               <Link to="/products">
-                Start Shopping
+                {t("cartStartShopping")}
                 <ArrowRight className="ml-3 w-4 h-4" />
               </Link>
             </Button>
@@ -66,10 +79,10 @@ const Cart = () => {
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <Link to="/products" className="hover:text-foreground transition-colors">
-            Shop
+            {t("cartBreadcrumbShop")}
           </Link>
           <span className="text-border">/</span>
-          <span className="text-foreground">Your Bag</span>
+          <span className="text-foreground">{t("cartYourBag")}</span>
         </div>
       </div>
 
@@ -81,7 +94,7 @@ const Cart = () => {
             transition={{ duration: 0.6 }}
             className="font-serif text-4xl md:text-5xl mb-12"
           >
-            Your Bag
+            {t("cartYourBag")}
           </motion.h1>
 
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
@@ -150,7 +163,7 @@ const Cart = () => {
                 className="inline-flex items-center gap-2 mt-8 text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowRight className="w-4 h-4 rotate-180" />
-                Continue Shopping
+                {t("cartContinueShopping")}
               </Link>
             </div>
 
@@ -162,31 +175,31 @@ const Cart = () => {
               className="lg:col-span-5"
             >
               <div className="bg-linen p-8 lg:sticky lg:top-28">
-                <h2 className="font-serif text-2xl mb-8">Order Summary</h2>
+                <h2 className="font-serif text-2xl mb-8">{t("cartOrderSummary")}</h2>
 
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">{t("cartSubtotal")}</span>
                     <span>${subtotal.toLocaleString()}</span>
                   </div>
                   {discount > 0 && coupon && (
                     <div className="flex justify-between text-sm text-primary">
                       <span className="flex items-center gap-1.5">
                         <Tag className="w-3.5 h-3.5" />
-                        Diskon ({coupon.code})
+                        {t("cartDiscountWithCode", { code: coupon.code })}
                       </span>
                       <span>−${discount.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Shipping</span>
+                    <span className="text-muted-foreground">{t("cartShipping")}</span>
                     <span>
-                      {shipping === 0 ? "Complimentary" : `$${shipping}`}
+                      {shipping === 0 ? t("cartShippingFree") : `$${shipping}`}
                     </span>
                   </div>
                   {!freeShip && (
                     <p className="text-xs text-muted-foreground">
-                      Free shipping on orders over $500
+                      {t("cartFreeShippingNote")}
                     </p>
                   )}
                 </div>
@@ -200,14 +213,14 @@ const Cart = () => {
                         <span className="font-semibold tracking-[0.15em] uppercase text-foreground">
                           {coupon.code}
                         </span>
-                        <span className="text-muted-foreground">— {coupon.label}</span>
+                        <span className="text-muted-foreground">— {translatedCouponLabel(coupon.code)}</span>
                       </div>
                       <button
                         onClick={() => {
                           removeCoupon();
-                          toast("Kupon dihapus.");
+                          toast(t("cartCouponRemoved"));
                         }}
-                        aria-label="Remove coupon"
+                        aria-label={t("cartRemoveCoupon")}
                         className="p-1 text-muted-foreground hover:text-foreground"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -217,13 +230,13 @@ const Cart = () => {
                     <form onSubmit={handleApply} className="space-y-2">
                       <label className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground">
                         <Tag className="w-3.5 h-3.5" />
-                        Kode Promo
+                        {t("cartPromoCode")}
                       </label>
                       <div className="flex gap-2">
                         <Input
                           value={code}
                           onChange={(e) => setCode(e.target.value)}
-                          placeholder="Masukkan kode"
+                          placeholder={t("cartEnterCode")}
                           className="rounded-none h-11 uppercase tracking-wide"
                         />
                         <Button
@@ -231,11 +244,11 @@ const Cart = () => {
                           variant="outline"
                           className="rounded-none h-11 px-5 text-xs tracking-[0.15em] uppercase"
                         >
-                          Apply
+                          {t("cartApply")}
                         </Button>
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        Coba <span className="text-foreground font-medium">XURTS10</span>, <span className="text-foreground font-medium">NEWUSER20</span>, atau <span className="text-foreground font-medium">FREESHIP</span>.
+                        {t("cartTryCodesNote", { code1: "XURTS10", code2: "NEWUSER20", code3: "FREESHIP" })}
                       </p>
                     </form>
                   )}
@@ -243,7 +256,7 @@ const Cart = () => {
 
                 <div className="border-t border-border pt-4 mb-8">
                   <div className="flex justify-between font-serif text-xl">
-                    <span>Total</span>
+                    <span>{t("cartTotal")}</span>
                     <span>${total.toLocaleString()}</span>
                   </div>
                 </div>
@@ -254,7 +267,7 @@ const Cart = () => {
                   className="w-full rounded-none py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
                   <Link to="/checkout">
-                    Proceed to Checkout
+                    {t("cartProceedToCheckout")}
                     <ArrowRight className="ml-3 w-4 h-4" />
                   </Link>
                 </Button>
@@ -263,18 +276,18 @@ const Cart = () => {
                 <div className="mt-8 pt-6 border-t border-border grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/60 mb-1">
-                      Shipping
+                      {t("cartShippingLabel")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Worldwide delivery
+                      {t("cartWorldwideDelivery")}
                     </p>
                   </div>
                   <div>
                     <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/60 mb-1">
-                      Returns
+                      {t("cartReturnsLabel")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      14-day policy
+                      {t("cartReturnsPolicy")}
                     </p>
                   </div>
                 </div>

@@ -1,10 +1,16 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import type { Dictionary, Language, TranslationMap } from "./dict/types";
+import { home } from "./dict/home";
+import { catalog } from "./dict/catalog";
+import { product } from "./dict/product";
+import { checkout } from "./dict/checkout";
+import { account } from "./dict/account";
+import { about } from "./dict/about";
+import { collectionsDict } from "./dict/collections";
 
-export type Language = "id" | "en" | "zh" | "ru";
+export type { Language };
 
-type TranslationMap = Record<string, string>;
-
-const translations: Record<Language, TranslationMap> = {
+const common: Dictionary = {
   id: {
     collections: "Koleksi", shopAll: "Belanja Semua", about: "Tentang Kami", search: "Cari produk",
     wishlist: "Favorit", item: "produk", items: "produk", wishlistEmpty: "Daftar favoritmu masih kosong",
@@ -18,6 +24,7 @@ const translations: Record<Language, TranslationMap> = {
     careGuide: "Panduan Perawatan", contact: "Kontak", rightsReserved: "Hak cipta dilindungi.",
     privacy: "Kebijakan Privasi", terms: "Syarat Layanan", cookies: "Kebijakan Cookie",
     footerDescription: "Parfum, fashion, sepatu, aksesoris, dan elektronik pilihan untuk gaya hidup modern.",
+    footerHours: "Sen–Jum, 09.00–18.00 CET",
   },
   en: {
     collections: "Collections", shopAll: "Shop All", about: "About", search: "Search products",
@@ -30,6 +37,7 @@ const translations: Record<Language, TranslationMap> = {
     support: "Support", shippingReturns: "Shipping & Returns", careGuide: "Care Guide", contact: "Contact",
     rightsReserved: "All rights reserved.", privacy: "Privacy Policy", terms: "Terms of Service", cookies: "Cookie Policy",
     footerDescription: "Selected perfumes, fashion, shoes, accessories, and electronics for modern living.",
+    footerHours: "Mon–Fri, 9am–6pm CET",
   },
   zh: {
     collections: "系列", shopAll: "选购全部", about: "关于我们", search: "搜索商品", wishlist: "心愿单", item: "件商品", items: "件商品",
@@ -40,6 +48,7 @@ const translations: Record<Language, TranslationMap> = {
     yourEmail: "你的邮箱", explore: "探索", ourStory: "我们的故事", support: "支持", shippingReturns: "配送与退货",
     careGuide: "护理指南", contact: "联系我们", rightsReserved: "版权所有。", privacy: "隐私政策", terms: "服务条款",
     cookies: "Cookie 政策", footerDescription: "为现代生活精心挑选的香水、时尚单品、鞋履、配饰和电子产品。",
+    footerHours: "周一至周五 9:00–18:00（CET）",
   },
   ru: {
     collections: "Коллекции", shopAll: "Все товары", about: "О нас", search: "Поиск товаров", wishlist: "Избранное", item: "товар", items: "товаров",
@@ -51,20 +60,58 @@ const translations: Record<Language, TranslationMap> = {
     support: "Поддержка", shippingReturns: "Доставка и возврат", careGuide: "Уход", contact: "Контакты",
     rightsReserved: "Все права защищены.", privacy: "Политика конфиденциальности", terms: "Условия обслуживания",
     cookies: "Политика cookie", footerDescription: "Отборные ароматы, одежда, обувь, аксессуары и электроника для современного образа жизни.",
+    footerHours: "Пн–Пт, 9:00–18:00 CET",
   },
+};
+
+const dictionaries: Dictionary[] = [common, home, catalog, product, checkout, account, about, collectionsDict];
+
+const merge = (language: Language): TranslationMap =>
+  Object.assign({}, ...dictionaries.map((dictionary) => dictionary[language] ?? {}));
+
+const translations: Record<Language, TranslationMap> = {
+  id: merge("id"),
+  en: merge("en"),
+  zh: merge("zh"),
+  ru: merge("ru"),
 };
 
 const labels: Record<Language, string> = { id: "Indonesia", en: "English", zh: "中文", ru: "Русский" };
 const STORAGE_KEY = "xurts_language";
 
-type LanguageContextValue = { language: Language; setLanguage: (language: Language) => void; t: (key: string) => string; languageLabel: (language: Language) => string };
+type LanguageContextValue = {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  /** Translated collection name by slug, falls back to the given name */
+  tCollection: (slug: string, fallback?: string) => string;
+  /** Translated collection description by slug, falls back to the given text */
+  tCollectionDesc: (slug: string, fallback?: string) => string;
+  languageLabel: (language: Language) => string;
+};
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>(() => (localStorage.getItem(STORAGE_KEY) as Language) || "id");
   useEffect(() => { localStorage.setItem(STORAGE_KEY, language); document.documentElement.lang = language; }, [language]);
-  const t = (key: string) => translations[language][key] || translations.en[key] || key;
-  return <LanguageContext.Provider value={{ language, setLanguage, t, languageLabel: (value) => labels[value] }}>{children}</LanguageContext.Provider>;
+  const t = (key: string, vars?: Record<string, string | number>) => {
+    const template = translations[language][key] || translations.en[key] || key;
+    if (!vars) return template;
+    return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+      name in vars ? String(vars[name]) : match
+    );
+  };
+  const lookup = (key: string, fallback?: string) =>
+    translations[language][key] || fallback || translations.en[key] || key;
+  const tCollection = (slug: string, fallback?: string) => lookup(`collection_${slug}`, fallback);
+  const tCollectionDesc = (slug: string, fallback?: string) => lookup(`collectionDesc_${slug}`, fallback);
+  return (
+    <LanguageContext.Provider
+      value={{ language, setLanguage, t, tCollection, tCollectionDesc, languageLabel: (value) => labels[value] }}
+    >
+      {children}
+    </LanguageContext.Provider>
+  );
 };
 
 export const useLanguage = () => {
