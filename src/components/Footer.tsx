@@ -4,7 +4,7 @@ import { collections } from "@/data/products";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export const Footer = () => {
-  const { t } = useLanguage();
+  const { t, tCollection } = useLanguage();
   return (
     <footer className="bg-foreground text-background">
       {/* Top bar */}
@@ -61,7 +61,7 @@ export const Footer = () => {
                     to={`/products?collection=${collection.slug}`}
                     className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                   >
-                    {collection.name}
+                    {tCollection(collection.slug, collection.name)}
                   </Link>
                 </li>
               ))}
