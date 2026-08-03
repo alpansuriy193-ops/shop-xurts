@@ -59,16 +59,39 @@ const common: Dictionary = {
   },
 };
 
+const dictionaries: Dictionary[] = [common, home, catalog, product, checkout, account, about];
+
+const merge = (language: Language): TranslationMap =>
+  Object.assign({}, ...dictionaries.map((dictionary) => dictionary[language] ?? {}));
+
+const translations: Record<Language, TranslationMap> = {
+  id: merge("id"),
+  en: merge("en"),
+  zh: merge("zh"),
+  ru: merge("ru"),
+};
+
 const labels: Record<Language, string> = { id: "Indonesia", en: "English", zh: "中文", ru: "Русский" };
 const STORAGE_KEY = "xurts_language";
 
-type LanguageContextValue = { language: Language; setLanguage: (language: Language) => void; t: (key: string) => string; languageLabel: (language: Language) => string };
+type LanguageContextValue = {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  languageLabel: (language: Language) => string;
+};
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>(() => (localStorage.getItem(STORAGE_KEY) as Language) || "id");
   useEffect(() => { localStorage.setItem(STORAGE_KEY, language); document.documentElement.lang = language; }, [language]);
-  const t = (key: string) => translations[language][key] || translations.en[key] || key;
+  const t = (key: string, vars?: Record<string, string | number>) => {
+    const template = translations[language][key] || translations.en[key] || key;
+    if (!vars) return template;
+    return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+      name in vars ? String(vars[name]) : match
+    );
+  };
   return <LanguageContext.Provider value={{ language, setLanguage, t, languageLabel: (value) => labels[value] }}>{children}</LanguageContext.Provider>;
 };
 
