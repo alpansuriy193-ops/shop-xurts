@@ -13,6 +13,7 @@ import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // Rough brightness check to pick an accessible check-icon color on a swatch
 const isLight = (hex: string) => {
@@ -35,17 +36,18 @@ const ProductDetail = () => {
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { addItem: addToCart } = useCart();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   if (!product) {
     return (
       <Layout>
         <div className="container-wide py-28 text-center">
-          <h1 className="font-serif text-4xl mb-4">Product Not Found</h1>
+          <h1 className="font-serif text-4xl mb-4">{t("pdProductNotFound")}</h1>
           <p className="text-muted-foreground mb-8">
-            The piece you're looking for doesn't exist.
+            {t("pdProductNotFoundDesc")}
           </p>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
-            <Link to="/products">Browse All Products</Link>
+            <Link to="/products">{t("pdBrowseAll")}</Link>
           </Button>
         </div>
       </Layout>
@@ -55,7 +57,7 @@ const ProductDetail = () => {
   const inWishlist = isInWishlist(product.id);
   const relatedProducts = getRelatedProducts(product.id);
   const collection = collections.find((c) => c.id === product.collection);
-  const sizeLabel = product.collection === "sepatu" ? "Size (EU)" : "Size";
+  const sizeLabel = product.collection === "sepatu" ? t("pdSizeLabelShoe") : t("pdSizeLabelDefault");
   const soldOut = product.stock === 0;
   const lowStock = typeof product.stock === "number" && product.stock > 0 && product.stock <= 5;
 
@@ -63,14 +65,14 @@ const ProductDetail = () => {
     if (inWishlist) {
       removeFromWishlist(product.id);
       toast({
-        title: "Removed from wishlist",
-        description: `${product.name} has been removed from your wishlist.`,
+        title: t("pdWishlistRemovedTitle"),
+        description: t("pdWishlistRemovedDesc", { name: product.name }),
       });
     } else {
       addToWishlist(product);
       toast({
-        title: "Added to wishlist",
-        description: `${product.name} has been saved to your wishlist.`,
+        title: t("pdWishlistAddedTitle"),
+        description: t("pdWishlistAddedDesc", { name: product.name }),
       });
     }
   };
@@ -79,25 +81,25 @@ const ProductDetail = () => {
     if (soldOut) return;
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
-        title: "Pilih ukuran dulu",
-        description: `Silakan pilih ${sizeLabel.toLowerCase()} sebelum menambahkan ke keranjang.`,
+        title: t("pdSelectSizeTitle"),
+        description: t("pdSelectSizeDesc", { size: sizeLabel.toLowerCase() }),
       });
       return;
     }
     if (product.colors && product.colors.length > 0 && !selectedColor) {
       toast({
-        title: "Pilih warna dulu",
-        description: "Silakan pilih warna sebelum menambahkan ke keranjang.",
+        title: t("pdSelectColorTitle"),
+        description: t("pdSelectColorDesc"),
       });
       return;
     }
     addToCart(product, quantity);
     const variantBits = [selectedSize, selectedColor].filter(Boolean).join(" · ");
     toast({
-      title: "Added to bag",
+      title: t("pdAddedToBagTitle"),
       description: variantBits
-        ? `${quantity} × ${product.name} (${variantBits}) added to your bag.`
-        : `${quantity} × ${product.name} added to your bag.`,
+        ? t("pdAddedToBagDescVariant", { qty: quantity, name: product.name, variant: variantBits })
+        : t("pdAddedToBagDesc", { qty: quantity, name: product.name }),
     });
     setQuantity(1);
   };
@@ -123,7 +125,7 @@ const ProductDetail = () => {
             to="/products"
             className="hover:text-foreground transition-colors"
           >
-            Shop
+            {t("pdBreadcrumbShop")}
           </Link>
           <span className="text-border">/</span>
           {collection && (
@@ -199,7 +201,7 @@ const ProductDetail = () => {
                 <div className="absolute top-5 left-5 flex flex-col gap-2">
                   {product.new && (
                     <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-foreground text-background">
-                      New
+                      {t("pdNew")}
                     </span>
                   )}
                 </div>
@@ -259,12 +261,12 @@ const ProductDetail = () => {
                 <div className="mb-6 -mt-4">
                   {soldOut ? (
                     <span className="inline-block px-3 py-1.5 text-[10px] font-semibold tracking-[0.25em] uppercase bg-foreground text-background">
-                      Sold Out
+                      {t("pdSoldOut")}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-primary">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      Stok terbatas — hanya tersisa {product.stock} unit
+                      {t("pdLowStock", { stock: product.stock })}
                     </span>
                   )}
                 </div>
@@ -280,24 +282,24 @@ const ProductDetail = () => {
               {product.notes && (
                 <div className="space-y-4 mb-10 pb-10 border-b border-border">
                   <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block">
-                    Fragrance Notes
+                    {t("pdFragranceNotes")}
                   </span>
                   <div className="grid grid-cols-1 gap-3">
                     {product.notes.top && (
                       <div className="flex gap-4">
-                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Top</span>
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">{t("pdNoteTop")}</span>
                         <span className="text-sm text-foreground leading-relaxed">{product.notes.top}</span>
                       </div>
                     )}
                     {product.notes.heart && (
                       <div className="flex gap-4">
-                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Heart</span>
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">{t("pdNoteHeart")}</span>
                         <span className="text-sm text-foreground leading-relaxed">{product.notes.heart}</span>
                       </div>
                     )}
                     {product.notes.base && (
                       <div className="flex gap-4">
-                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">Base</span>
+                        <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-primary w-14 pt-0.5">{t("pdNoteBase")}</span>
                         <span className="text-sm text-foreground leading-relaxed">{product.notes.base}</span>
                       </div>
                     )}
@@ -305,7 +307,7 @@ const ProductDetail = () => {
                   {product.volume && (
                     <div className="pt-2">
                       <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
-                        Volume
+                        {t("pdVolume")}
                       </span>
                       <span className="text-sm text-foreground">{product.volume}</span>
                     </div>
@@ -318,7 +320,7 @@ const ProductDetail = () => {
                 <div className="mb-8">
                   <div className="flex items-baseline justify-between mb-3">
                     <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
-                      Color
+                      {t("pdColor")}
                     </span>
                     {selectedColor && (
                       <span className="text-xs text-foreground">{selectedColor}</span>
@@ -394,14 +396,14 @@ const ProductDetail = () => {
               <div className="space-y-5 mb-10 pb-10 border-b border-border">
                 <div>
                   <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
-                    {product.collection === "parfum" ? "Composition" : "Materials"}
+                    {product.collection === "parfum" ? t("pdComposition") : t("pdMaterials")}
                   </span>
                   <span className="text-sm text-foreground">{product.materials}</span>
                 </div>
                 {product.dimensions && (
                   <div>
                     <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-1.5">
-                      Dimensions
+                      {t("pdDimensions")}
                     </span>
                     <span className="text-sm text-foreground">{product.dimensions}</span>
                   </div>
@@ -435,7 +437,7 @@ const ProductDetail = () => {
               {/* Quantity Selector */}
               <div className="mb-6">
                 <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground block mb-3">
-                  Quantity
+                  {t("pdQuantity")}
                 </span>
                 <QuantitySelector
                   quantity={quantity}
@@ -452,7 +454,7 @@ const ProductDetail = () => {
                   className="rounded-none w-full py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
                   <ShoppingBag className="w-4 h-4 mr-3" />
-                  {soldOut ? "Sold Out" : "Add to Bag"}
+                  {soldOut ? t("pdSoldOutButton") : t("pdAddToBag")}
                 </Button>
                 <Button
                   variant="outline"
@@ -466,7 +468,7 @@ const ProductDetail = () => {
                       inWishlist && "fill-primary text-primary"
                     )}
                   />
-                  {inWishlist ? "Saved to Wishlist" : "Add to Wishlist"}
+                  {inWishlist ? t("pdSavedToWishlist") : t("pdAddToWishlist")}
                 </Button>
               </div>
 
@@ -474,18 +476,18 @@ const ProductDetail = () => {
               <div className="mt-10 pt-8 border-t border-border grid grid-cols-2 gap-6">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/60 mb-1">
-                    Shipping
+                    {t("pdShipping")}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Complimentary worldwide
+                    {t("pdShippingDesc")}
                   </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/60 mb-1">
-                    Returns
+                    {t("pdReturns")}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    14-day return policy
+                    {t("pdReturnsDesc")}
                   </p>
                 </div>
               </div>
@@ -502,10 +504,10 @@ const ProductDetail = () => {
               {product.specs && product.specs.length > 0 && (
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
-                    Specifications
+                    {t("pdSpecifications")}
                   </p>
                   <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-8">
-                    Built with intent
+                    {t("pdBuiltWithIntent")}
                   </h3>
                   <dl className="divide-y divide-border">
                     {product.specs.map((s) => (
@@ -524,10 +526,10 @@ const ProductDetail = () => {
               {product.inTheBox && product.inTheBox.length > 0 && (
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
-                    In the Box
+                    {t("pdInTheBox")}
                   </p>
                   <h3 className="font-serif text-2xl md:text-3xl text-foreground mb-8">
-                    What ships to you
+                    {t("pdWhatShips")}
                   </h3>
                   <ul className="space-y-3">
                     {product.inTheBox.map((item) => (
@@ -551,17 +553,17 @@ const ProductDetail = () => {
             <div className="flex items-end justify-between mb-12">
               <div>
                 <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-                  You May Also Like
+                  {t("pdYouMayAlsoLike")}
                 </p>
                 <h2 className="font-serif text-3xl md:text-4xl text-foreground">
-                  More from {collection?.name}
+                  {t("pdMoreFrom", { collection: collection?.name ?? "" })}
                 </h2>
               </div>
               <Link
                 to={`/products?collection=${collection?.slug}`}
                 className="hidden md:flex items-center gap-2 text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors"
               >
-                View All
+                {t("pdViewAll")}
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
