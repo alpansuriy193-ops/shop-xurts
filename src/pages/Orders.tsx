@@ -6,6 +6,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface OrderItem {
   product_id: string;
@@ -31,15 +32,16 @@ interface Order {
   items: OrderItem[];
 }
 
-const statusLabel: Record<string, string> = {
-  pending: "Menunggu Konfirmasi",
-  processing: "Diproses",
-  shipped: "Dikirim",
-  delivered: "Selesai",
-  cancelled: "Dibatalkan",
+const statusKey: Record<string, string> = {
+  pending: "ordersStatusPending",
+  processing: "ordersStatusProcessing",
+  shipped: "ordersStatusShipped",
+  delivered: "ordersStatusDelivered",
+  cancelled: "ordersStatusCancelled",
 };
 
 const Orders = () => {
+  const { t, language } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -66,23 +68,25 @@ const Orders = () => {
       <Layout>
         <div className="container-narrow py-28 text-center">
           <Lock className="w-10 h-10 mx-auto mb-6 text-muted-foreground/40" />
-          <h1 className="font-serif text-4xl mb-4">Masuk untuk Lihat Pesanan</h1>
-          <p className="text-muted-foreground mb-8">Riwayat pesananmu tersimpan di akunmu.</p>
+          <h1 className="font-serif text-4xl mb-4">{t("ordersSignInTitle")}</h1>
+          <p className="text-muted-foreground mb-8">{t("ordersSignInDescription")}</p>
           <Button asChild size="lg" className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium">
-            <Link to="/auth">Masuk / Daftar</Link>
+            <Link to="/auth">{t("ordersSignIn")}</Link>
           </Button>
         </div>
       </Layout>
     );
   }
 
+  const localeMap: Record<string, string> = { id: "id-ID", en: "en-US", zh: "zh-CN", ru: "ru-RU" };
+
   return (
     <Layout>
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+          <Link to="/" className="hover:text-foreground transition-colors">{t("ordersHome")}</Link>
           <span className="text-border">/</span>
-          <span className="text-foreground">Pesanan Saya</span>
+          <span className="text-foreground">{t("ordersBreadcrumb")}</span>
         </div>
       </div>
 
@@ -94,18 +98,18 @@ const Orders = () => {
             transition={{ duration: 0.6 }}
             className="font-serif text-4xl md:text-5xl mb-12"
           >
-            Pesanan Saya
+            {t("ordersTitle")}
           </motion.h1>
 
           {orders === null ? (
-            <p className="text-muted-foreground">Memuat pesananmu…</p>
+            <p className="text-muted-foreground">{t("ordersLoading")}</p>
           ) : orders.length === 0 ? (
             <div className="text-center py-16">
               <Package className="w-12 h-12 mx-auto mb-6 text-muted-foreground/30" />
-              <p className="font-serif text-2xl mb-2">Belum ada pesanan</p>
-              <p className="text-muted-foreground mb-8">Yuk mulai belanja koleksi kami.</p>
+              <p className="font-serif text-2xl mb-2">{t("ordersEmptyTitle")}</p>
+              <p className="text-muted-foreground mb-8">{t("ordersEmptyDescription")}</p>
               <Button asChild className="rounded-none px-8 py-5 text-xs tracking-[0.15em] uppercase">
-                <Link to="/products">Mulai Belanja <ArrowRight className="ml-2 w-4 h-4" /></Link>
+                <Link to="/products">{t("ordersStartShopping")} <ArrowRight className="ml-2 w-4 h-4" /></Link>
               </Button>
             </div>
           ) : (
@@ -115,17 +119,17 @@ const Orders = () => {
                   <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-border">
                     <div>
                       <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/70">
-                        Pesanan #{order.id.slice(0, 8).toUpperCase()}
+                        {t("ordersOrderNumber", { id: order.id.slice(0, 8).toUpperCase() })}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {new Date(order.created_at).toLocaleDateString("id-ID", {
+                        {new Date(order.created_at).toLocaleDateString(localeMap[language] ?? "id-ID", {
                           day: "numeric", month: "long", year: "numeric",
                         })}
                       </p>
                     </div>
                     <div className="text-right">
                       <span className="inline-block px-3 py-1 text-[11px] font-semibold tracking-[0.15em] uppercase bg-primary/10 text-primary">
-                        {statusLabel[order.status] ?? order.status}
+                        {t(statusKey[order.status] ?? order.status) }
                       </span>
                       <p className="font-serif text-xl mt-2">${Number(order.total).toLocaleString()}</p>
                     </div>
@@ -139,7 +143,7 @@ const Orders = () => {
                         </Link>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{it.name}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">Qty: {it.quantity}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{t("ordersQty", { count: it.quantity })}</p>
                         </div>
                         <p className="text-sm">${(it.price * it.quantity).toLocaleString()}</p>
                       </div>
@@ -147,7 +151,7 @@ const Orders = () => {
                   </div>
 
                   <div className="pt-4 border-t border-border text-xs text-muted-foreground">
-                    Dikirim ke {order.full_name} — {order.city}, {order.country}
+                    {t("ordersShippedTo", { name: order.full_name, city: order.city, country: order.country })}
                   </div>
                 </div>
               ))}

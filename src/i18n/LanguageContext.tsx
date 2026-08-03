@@ -24,6 +24,7 @@ const common: Dictionary = {
     careGuide: "Panduan Perawatan", contact: "Kontak", rightsReserved: "Hak cipta dilindungi.",
     privacy: "Kebijakan Privasi", terms: "Syarat Layanan", cookies: "Kebijakan Cookie",
     footerDescription: "Parfum, fashion, sepatu, aksesoris, dan elektronik pilihan untuk gaya hidup modern.",
+    footerHours: "Sen–Jum, 09.00–18.00 CET",
   },
   en: {
     collections: "Collections", shopAll: "Shop All", about: "About", search: "Search products",
@@ -36,6 +37,7 @@ const common: Dictionary = {
     support: "Support", shippingReturns: "Shipping & Returns", careGuide: "Care Guide", contact: "Contact",
     rightsReserved: "All rights reserved.", privacy: "Privacy Policy", terms: "Terms of Service", cookies: "Cookie Policy",
     footerDescription: "Selected perfumes, fashion, shoes, accessories, and electronics for modern living.",
+    footerHours: "Mon–Fri, 9am–6pm CET",
   },
   zh: {
     collections: "系列", shopAll: "选购全部", about: "关于我们", search: "搜索商品", wishlist: "心愿单", item: "件商品", items: "件商品",
@@ -46,6 +48,7 @@ const common: Dictionary = {
     yourEmail: "你的邮箱", explore: "探索", ourStory: "我们的故事", support: "支持", shippingReturns: "配送与退货",
     careGuide: "护理指南", contact: "联系我们", rightsReserved: "版权所有。", privacy: "隐私政策", terms: "服务条款",
     cookies: "Cookie 政策", footerDescription: "为现代生活精心挑选的香水、时尚单品、鞋履、配饰和电子产品。",
+    footerHours: "周一至周五 9:00–18:00（CET）",
   },
   ru: {
     collections: "Коллекции", shopAll: "Все товары", about: "О нас", search: "Поиск товаров", wishlist: "Избранное", item: "товар", items: "товаров",
@@ -57,6 +60,7 @@ const common: Dictionary = {
     support: "Поддержка", shippingReturns: "Доставка и возврат", careGuide: "Уход", contact: "Контакты",
     rightsReserved: "Все права защищены.", privacy: "Политика конфиденциальности", terms: "Условия обслуживания",
     cookies: "Политика cookie", footerDescription: "Отборные ароматы, одежда, обувь, аксессуары и электроника для современного образа жизни.",
+    footerHours: "Пн–Пт, 9:00–18:00 CET",
   },
 };
 
