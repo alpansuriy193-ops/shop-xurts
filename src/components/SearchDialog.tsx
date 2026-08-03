@@ -10,6 +10,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { products, collections } from "@/data/products";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   open: boolean;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export const SearchDialog = ({ open, onOpenChange }: Props) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -54,15 +56,15 @@ export const SearchDialog = ({ open, onOpenChange }: Props) => {
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput
-        placeholder="Cari parfum, fashion, sepatu, elektronik..."
+        placeholder={t("searchDialogPlaceholder")}
         value={query}
         onValueChange={setQuery}
       />
       <CommandList>
-        <CommandEmpty>Tidak ada hasil untuk "{query}".</CommandEmpty>
+        <CommandEmpty>{t("searchDialogEmpty", { query })}</CommandEmpty>
 
         {matchedCollections.length > 0 && (
-          <CommandGroup heading="Collections">
+          <CommandGroup heading={t("searchDialogCollections")}>
             {matchedCollections.map((c) => (
               <CommandItem key={c.id} value={`collection-${c.slug}`} onSelect={() => go(`/products?collection=${c.slug}`)}>
                 <Search className="w-4 h-4 mr-2 text-muted-foreground" />
@@ -73,7 +75,7 @@ export const SearchDialog = ({ open, onOpenChange }: Props) => {
         )}
 
         {matchedProducts.length > 0 && (
-          <CommandGroup heading={q ? "Products" : "Featured"}>
+          <CommandGroup heading={q ? t("searchDialogProducts") : t("searchDialogFeatured")}>
             {matchedProducts.map((p) => (
               <CommandItem key={p.id} value={p.name} onSelect={() => go(`/product/${p.slug}`)}>
                 <img src={p.images[0]} alt="" className="w-8 h-10 object-cover mr-3" />
