@@ -79,6 +79,10 @@ type LanguageContextValue = {
   language: Language;
   setLanguage: (language: Language) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
+  /** Translated collection name by slug, falls back to the given name */
+  tCollection: (slug: string, fallback?: string) => string;
+  /** Translated collection description by slug, falls back to the given text */
+  tCollectionDesc: (slug: string, fallback?: string) => string;
   languageLabel: (language: Language) => string;
 };
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
@@ -93,7 +97,17 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       name in vars ? String(vars[name]) : match
     );
   };
-  return <LanguageContext.Provider value={{ language, setLanguage, t, languageLabel: (value) => labels[value] }}>{children}</LanguageContext.Provider>;
+  const lookup = (key: string, fallback?: string) =>
+    translations[language][key] || fallback || translations.en[key] || key;
+  const tCollection = (slug: string, fallback?: string) => lookup(`collection_${slug}`, fallback);
+  const tCollectionDesc = (slug: string, fallback?: string) => lookup(`collectionDesc_${slug}`, fallback);
+  return (
+    <LanguageContext.Provider
+      value={{ language, setLanguage, t, tCollection, tCollectionDesc, languageLabel: (value) => labels[value] }}
+    >
+      {children}
+    </LanguageContext.Provider>
+  );
 };
 
 export const useLanguage = () => {
