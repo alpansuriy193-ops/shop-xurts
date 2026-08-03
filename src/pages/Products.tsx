@@ -14,18 +14,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type SortOption = "featured" | "newest" | "price-asc" | "price-desc" | "name-asc";
 
-const sortOptions: { value: SortOption; label: string }[] = [
-  { value: "featured", label: "Featured" },
-  { value: "newest", label: "Newest" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "name-asc", label: "Alphabetical A-Z" },
+const sortOptions: { value: SortOption; labelKey: string }[] = [
+  { value: "featured", labelKey: "catalogSortFeatured" },
+  { value: "newest", labelKey: "catalogSortNewest" },
+  { value: "price-asc", labelKey: "catalogSortPriceAsc" },
+  { value: "price-desc", labelKey: "catalogSortPriceDesc" },
+  { value: "name-asc", labelKey: "catalogSortNameAsc" },
 ];
 
 const Products = () => {
+  const { t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
@@ -111,10 +113,10 @@ const Products = () => {
             transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-3">
-              {currentCollection ? "Collection" : "Shop"}
+              {currentCollection ? t("catalogCollectionLabel") : t("catalogShopLabel")}
             </p>
             <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-white mb-3 leading-[0.95]">
-              {currentCollection ? currentCollection.name : "All Pieces"}
+              {currentCollection ? currentCollection.name : t("catalogAllPieces")}
             </h1>
             {currentCollection && (
               <p className="text-base text-white/70 max-w-lg">
@@ -142,7 +144,7 @@ const Products = () => {
                     : "hover:bg-accent"
                 )}
               >
-                All
+                {t("catalogAll")}
               </Button>
               {collections.map((collection) => (
                 <Button
@@ -165,7 +167,7 @@ const Products = () => {
             {/* Sorting */}
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground tracking-[0.1em] uppercase">
-                Sort by
+                {t("catalogSortBy")}
               </span>
               <Select value={activeSort} onValueChange={handleSortChange}>
                 <SelectTrigger className="w-[180px] rounded-none text-xs tracking-[0.05em] h-9">
@@ -178,7 +180,7 @@ const Products = () => {
                       value={option.value}
                       className="text-xs"
                     >
-                      {option.label}
+                      {t(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -195,8 +197,12 @@ const Products = () => {
             <>
               <div className="flex items-center justify-between mb-10">
                 <p className="text-sm text-muted-foreground">
-                  {filteredAndSortedProducts.length}{" "}
-                  {filteredAndSortedProducts.length === 1 ? "piece" : "pieces"}
+                  {t(
+                    filteredAndSortedProducts.length === 1
+                      ? "catalogResultCountSingular"
+                      : "catalogResultCount",
+                    { count: filteredAndSortedProducts.length }
+                  )}
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
@@ -212,17 +218,17 @@ const Products = () => {
           ) : (
             <div className="text-center py-28">
               <p className="font-serif text-2xl text-muted-foreground mb-4">
-                No pieces found
+                {t("catalogNoPiecesFound")}
               </p>
               <p className="text-muted-foreground mb-8">
-                This collection is currently being curated.
+                {t("catalogCollectionCurated")}
               </p>
               <Button
                 asChild
                 variant="outline"
                 className="rounded-none px-8 text-sm tracking-[0.1em] uppercase"
               >
-                <Link to="/products">View All Pieces</Link>
+                <Link to="/products">{t("catalogViewAllPieces")}</Link>
               </Button>
             </div>
           )}
@@ -247,10 +253,10 @@ const Products = () => {
             transition={{ duration: 0.8 }}
           >
             <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-4">
-              Need Assistance?
+              {t("catalogNeedAssistance")}
             </p>
             <h2 className="font-serif text-3xl md:text-5xl text-white mb-6">
-              We're Here to Help
+              {t("catalogHereToHelp")}
             </h2>
             <Button
               asChild
@@ -258,7 +264,7 @@ const Products = () => {
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase bg-white text-charcoal hover:bg-white/90"
             >
               <a href="mailto:hello@maison.com">
-                Contact Us
+                {t("catalogContactUs")}
                 <ArrowRight className="ml-3 w-4 h-4" />
               </a>
             </Button>
