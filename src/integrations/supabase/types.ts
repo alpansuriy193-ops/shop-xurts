@@ -14,6 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_products: {
+        Row: {
+          active: boolean
+          affiliate_link: string | null
+          care: string | null
+          collection: string
+          colors: Json
+          created_at: string
+          currency: string
+          description: string
+          dimensions: string | null
+          featured: boolean
+          fit: string | null
+          id: string
+          images: string[]
+          in_the_box: string[]
+          is_new: boolean
+          long_description: string
+          marketplace: string | null
+          materials: string
+          name: string
+          notes: Json | null
+          price: number
+          sizes: string[]
+          slug: string
+          sort_order: number
+          specs: Json
+          stock: number | null
+          updated_at: string
+          volume: string | null
+          warranty: string | null
+        }
+        Insert: {
+          active?: boolean
+          affiliate_link?: string | null
+          care?: string | null
+          collection: string
+          colors?: Json
+          created_at?: string
+          currency?: string
+          description?: string
+          dimensions?: string | null
+          featured?: boolean
+          fit?: string | null
+          id?: string
+          images?: string[]
+          in_the_box?: string[]
+          is_new?: boolean
+          long_description?: string
+          marketplace?: string | null
+          materials?: string
+          name: string
+          notes?: Json | null
+          price?: number
+          sizes?: string[]
+          slug: string
+          sort_order?: number
+          specs?: Json
+          stock?: number | null
+          updated_at?: string
+          volume?: string | null
+          warranty?: string | null
+        }
+        Update: {
+          active?: boolean
+          affiliate_link?: string | null
+          care?: string | null
+          collection?: string
+          colors?: Json
+          created_at?: string
+          currency?: string
+          description?: string
+          dimensions?: string | null
+          featured?: boolean
+          fit?: string | null
+          id?: string
+          images?: string[]
+          in_the_box?: string[]
+          is_new?: boolean
+          long_description?: string
+          marketplace?: string | null
+          materials?: string
+          name?: string
+          notes?: Json | null
+          price?: number
+          sizes?: string[]
+          slug?: string
+          sort_order?: number
+          specs?: Json
+          stock?: number | null
+          updated_at?: string
+          volume?: string | null
+          warranty?: string | null
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           address: string
@@ -119,6 +215,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          role: string
           updated_at: string
         }
         Insert: {
@@ -126,6 +223,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          role?: string
           updated_at?: string
         }
         Update: {
@@ -133,6 +231,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          role?: string
           updated_at?: string
         }
         Relationships: []
@@ -163,7 +262,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
