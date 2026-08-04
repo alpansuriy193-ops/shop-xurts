@@ -15,7 +15,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product, index = 0, variant = "default" }: ProductCardProps) => {
-  const { t } = useLanguage();
+  const { t, tCollection } = useLanguage();
   const { addItem, removeItem, isInWishlist } = useWishlist();
   const inWishlist = isInWishlist(product.id);
   const collection = collections.find((c) => c.id === product.collection);
@@ -167,7 +167,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
           {/* Collection label */}
           {collection && (
             <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
-              {collection.name}
+              {tCollection(collection.slug, collection.name)}
             </p>
           )}
 

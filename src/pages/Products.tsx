@@ -27,7 +27,7 @@ const sortOptions: { value: SortOption; labelKey: string }[] = [
 ];
 
 const Products = () => {
-  const { t } = useLanguage();
+  const { t, tCollection, tCollectionDesc } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
@@ -100,7 +100,7 @@ const Products = () => {
               currentCollection?.heroImage ||
               "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
             }
-            alt={currentCollection?.name || "All Products"}
+            alt={currentCollection ? tCollection(currentCollection.slug, currentCollection.name) : t("catalogAllPieces")}
             className="w-full h-full object-cover transition-opacity duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-charcoal/10" />
@@ -116,11 +116,11 @@ const Products = () => {
               {currentCollection ? t("catalogCollectionLabel") : t("catalogShopLabel")}
             </p>
             <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-white mb-3 leading-[0.95]">
-              {currentCollection ? currentCollection.name : t("catalogAllPieces")}
+              {currentCollection ? tCollection(currentCollection.slug, currentCollection.name) : t("catalogAllPieces")}
             </h1>
             {currentCollection && (
               <p className="text-base text-white/70 max-w-lg">
-                {currentCollection.description}
+                {tCollectionDesc(currentCollection.slug, currentCollection.description)}
               </p>
             )}
           </motion.div>
@@ -159,7 +159,7 @@ const Products = () => {
                       : "hover:bg-accent"
                   )}
                 >
-                  {collection.name}
+                  {tCollection(collection.slug, collection.name)}
                 </Button>
               ))}
             </div>

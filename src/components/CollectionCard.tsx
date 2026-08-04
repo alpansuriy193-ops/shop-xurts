@@ -11,7 +11,8 @@ interface CollectionCardProps {
 }
 
 export const CollectionCard = ({ collection, index = 0, variant = "default" }: CollectionCardProps) => {
-  const { t } = useLanguage();
+  const { t, tCollection, tCollectionDesc } = useLanguage();
+  const collectionName = tCollection(collection.slug, collection.name);
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -33,7 +34,7 @@ export const CollectionCard = ({ collection, index = 0, variant = "default" }: C
           {/* Image with zoom on hover */}
           <img
             src={collection.image}
-            alt={collection.name}
+            alt={collectionName}
             className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110"
           />
 
@@ -50,12 +51,12 @@ export const CollectionCard = ({ collection, index = 0, variant = "default" }: C
 
             {/* Title */}
             <h3 className="font-serif text-2xl md:text-3xl text-white mb-2 transform group-hover:-translate-y-1 transition-transform duration-500">
-              {collection.name}
+              {collectionName}
             </h3>
 
             {/* Description with reveal */}
             <p className="text-sm text-white/70 leading-relaxed max-w-xs transform translate-y-1 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-              {collection.description}
+              {tCollectionDesc(collection.slug, collection.description)}
             </p>
 
             {/* Arrow indicator */}
