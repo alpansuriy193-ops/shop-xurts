@@ -34,7 +34,7 @@ export const Header = () => {
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { items, removeItem } = useWishlist();
-  const { t } = useLanguage();
+  const { t, tCollection, tCollectionDesc } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,10 +83,10 @@ export const Header = () => {
                               )}
                             >
                               <div className="text-sm font-medium leading-none">
-                                {collection.name}
+                                {tCollection(collection.slug, collection.name)}
                               </div>
                               <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                {collection.description}
+                                {tCollectionDesc(collection.slug, collection.description)}
                               </p>
                             </Link>
                           </NavigationMenuLink>
@@ -300,7 +300,7 @@ export const Header = () => {
                         className="block px-2 py-2.5 text-sm hover:bg-accent transition-colors duration-300"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        {collection.name}
+                        {tCollection(collection.slug, collection.name)}
                       </Link>
                     </motion.div>
                   ))}

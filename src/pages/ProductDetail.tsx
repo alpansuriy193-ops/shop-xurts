@@ -36,7 +36,7 @@ const ProductDetail = () => {
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlist();
   const { addItem: addToCart } = useCart();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, tCollection } = useLanguage();
 
   if (!product) {
     return (
@@ -134,7 +134,7 @@ const ProductDetail = () => {
                 to={`/products?collection=${collection.slug}`}
                 className="hover:text-foreground transition-colors"
               >
-                {collection.name}
+                {tCollection(collection.slug, collection.name)}
               </Link>
               <span className="text-border">/</span>
             </>
@@ -244,7 +244,7 @@ const ProductDetail = () => {
                   to={`/products?collection=${collection.slug}`}
                   className="inline-block text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5 hover:text-primary/80 transition-colors"
                 >
-                  {collection.name}
+                  {tCollection(collection.slug, collection.name)}
                 </Link>
               )}
 

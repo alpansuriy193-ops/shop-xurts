@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const SearchDialog = ({ open, onOpenChange }: Props) => {
-  const { t } = useLanguage();
+  const { t, tCollection } = useLanguage();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -50,7 +50,7 @@ export const SearchDialog = ({ open, onOpenChange }: Props) => {
     : products.filter((p) => p.featured).slice(0, 5);
 
   const matchedCollections = q
-    ? collections.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q))
+    ? collections.filter((c) => tCollection(c.slug, c.name).toLowerCase().includes(q) || c.slug.toLowerCase().includes(q))
     : [];
 
   return (
@@ -68,7 +68,7 @@ export const SearchDialog = ({ open, onOpenChange }: Props) => {
             {matchedCollections.map((c) => (
               <CommandItem key={c.id} value={`collection-${c.slug}`} onSelect={() => go(`/products?collection=${c.slug}`)}>
                 <Search className="w-4 h-4 mr-2 text-muted-foreground" />
-                <span>{c.name}</span>
+                <span>{tCollection(c.slug, c.name)}</span>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -81,7 +81,9 @@ export const SearchDialog = ({ open, onOpenChange }: Props) => {
                 <img src={p.images[0]} alt="" className="w-8 h-10 object-cover mr-3" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm truncate">{p.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">${p.price.toLocaleString()} · {p.collection}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    ${p.price.toLocaleString()} · {tCollection(collections.find((c) => c.id === p.collection)?.slug ?? p.collection, p.collection)}
+                  </p>
                 </div>
               </CommandItem>
             ))}

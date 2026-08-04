@@ -23,7 +23,7 @@ interface QuickViewDialogProps {
 }
 
 export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialogProps) => {
-  const { t } = useLanguage();
+  const { t, tCollection } = useLanguage();
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
   const { addItem: addToCart } = useCart();
@@ -89,7 +89,7 @@ export const QuickViewDialog = ({ product, open, onOpenChange }: QuickViewDialog
           <div className="p-6 md:p-8 flex flex-col max-h-[80vh] overflow-y-auto">
             {collection && (
               <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-primary mb-2">
-                {collection.name}
+                {tCollection(collection.slug, collection.name)}
               </p>
             )}
             <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-3 leading-tight">
