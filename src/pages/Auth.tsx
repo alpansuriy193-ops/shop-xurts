@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +30,8 @@ const Auth = () => {
   const [signUpName, setSignUpName] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
+  const [showSignInPassword, setShowSignInPassword] = useState(false);
+  const [showSignUpPassword, setShowSignUpPassword] = useState(false);
 
   useEffect(() => {
     if (user) navigate("/", { replace: true });
@@ -117,7 +120,24 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="si-pass" className="text-[11px] tracking-[0.2em] uppercase">{t("authPassword")}</Label>
-                  <Input id="si-pass" type="password" value={signInPassword} onChange={(e) => setSignInPassword(e.target.value)} className="rounded-none h-11" required />
+                  <div className="relative">
+                    <Input
+                      id="si-pass"
+                      type={showSignInPassword ? "text" : "password"}
+                      value={signInPassword}
+                      onChange={(e) => setSignInPassword(e.target.value)}
+                      className="rounded-none h-11 pr-11"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSignInPassword((v) => !v)}
+                      aria-label={showSignInPassword ? t("authHidePassword") : t("authShowPassword")}
+                      className="absolute right-0 top-0 h-11 w-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showSignInPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" disabled={loading} className="w-full rounded-none py-6 text-xs tracking-[0.15em] uppercase">
                   {loading ? t("authSigningIn") : t("authSignIn")}
@@ -137,7 +157,24 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="su-pass" className="text-[11px] tracking-[0.2em] uppercase">{t("authPassword")}</Label>
-                  <Input id="su-pass" type="password" value={signUpPassword} onChange={(e) => setSignUpPassword(e.target.value)} className="rounded-none h-11" required />
+                  <div className="relative">
+                    <Input
+                      id="su-pass"
+                      type={showSignUpPassword ? "text" : "password"}
+                      value={signUpPassword}
+                      onChange={(e) => setSignUpPassword(e.target.value)}
+                      className="rounded-none h-11 pr-11"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSignUpPassword((v) => !v)}
+                      aria-label={showSignUpPassword ? t("authHidePassword") : t("authShowPassword")}
+                      className="absolute right-0 top-0 h-11 w-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showSignUpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" disabled={loading} className="w-full rounded-none py-6 text-xs tracking-[0.15em] uppercase">
                   {loading ? t("authCreatingAccount") : t("authCreateAccount")}
