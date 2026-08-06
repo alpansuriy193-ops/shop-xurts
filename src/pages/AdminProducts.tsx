@@ -14,6 +14,16 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Plus, Trash2, ExternalLink } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const SIZE_PRESETS: Record<string, string> = {
   fashion: "XS, S, M, L, XL",
@@ -225,7 +235,10 @@ const AdminProducts = () => {
   };
 
   const remove = async (id: string) => {
+    setDeleting(true);
     const { error } = await (supabase as any).from("affiliate_products").delete().eq("id", id);
+    setDeleting(false);
+    setPendingDelete(null);
     if (error) return toast.error(error.message);
     toast.success("Produk dihapus.");
     if (form.id === id) setForm(emptyForm);
