@@ -449,7 +449,13 @@ const AdminProducts = () => {
                         </a>
                       </Button>
                     )}
-                    <Button size="icon" variant="ghost" onClick={() => remove(row.id)} aria-label="Hapus produk">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setPendingDelete(row)}
+                      aria-label="Hapus produk"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -458,6 +464,30 @@ const AdminProducts = () => {
             </div>
           </aside>
         </div>
+
+        <AlertDialog open={!!pendingDelete} onOpenChange={(open) => !open && setPendingDelete(null)}>
+          <AlertDialogContent className="rounded-none">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-serif text-2xl">Hapus produk ini?</AlertDialogTitle>
+              <AlertDialogDescription>
+                "{pendingDelete?.name}" akan dihapus permanen dari katalog dan tidak bisa dikembalikan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-none">Batal</AlertDialogCancel>
+              <AlertDialogAction
+                className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={deleting}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pendingDelete) remove(pendingDelete.id);
+                }}
+              >
+                {deleting ? "Menghapus..." : "Ya, hapus"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </section>
     </Layout>
   );
