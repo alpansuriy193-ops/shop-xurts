@@ -148,6 +148,8 @@ const AdminProducts = () => {
   const [rows, setRows] = useState<AffiliateProductRow[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<AffiliateProductRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const showSizes = ["fashion", "sepatu", "aksesoris"].includes(form.collection);
   const showParfum = form.collection === "parfum";
