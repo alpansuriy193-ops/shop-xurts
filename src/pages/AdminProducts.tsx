@@ -14,6 +14,16 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Plus, Trash2, ExternalLink } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const SIZE_PRESETS: Record<string, string> = {
   fashion: "XS, S, M, L, XL",
@@ -138,6 +148,8 @@ const AdminProducts = () => {
   const [rows, setRows] = useState<AffiliateProductRow[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<AffiliateProductRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const showSizes = ["fashion", "sepatu", "aksesoris"].includes(form.collection);
   const showParfum = form.collection === "parfum";
@@ -225,7 +237,10 @@ const AdminProducts = () => {
   };
 
   const remove = async (id: string) => {
+    setDeleting(true);
     const { error } = await (supabase as any).from("affiliate_products").delete().eq("id", id);
+    setDeleting(false);
+    setPendingDelete(null);
     if (error) return toast.error(error.message);
     toast.success("Produk dihapus.");
     if (form.id === id) setForm(emptyForm);
@@ -434,7 +449,13 @@ const AdminProducts = () => {
                         </a>
                       </Button>
                     )}
-                    <Button size="icon" variant="ghost" onClick={() => remove(row.id)} aria-label="Hapus produk">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setPendingDelete(row)}
+                      aria-label="Hapus produk"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -443,6 +464,30 @@ const AdminProducts = () => {
             </div>
           </aside>
         </div>
+
+        <AlertDialog open={!!pendingDelete} onOpenChange={(open) => !open && setPendingDelete(null)}>
+          <AlertDialogContent className="rounded-none">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-serif text-2xl">Hapus produk ini?</AlertDialogTitle>
+              <AlertDialogDescription>
+                "{pendingDelete?.name}" akan dihapus permanen dari katalog dan tidak bisa dikembalikan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-none">Batal</AlertDialogCancel>
+              <AlertDialogAction
+                className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={deleting}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pendingDelete) remove(pendingDelete.id);
+                }}
+              >
+                {deleting ? "Menghapus..." : "Ya, hapus"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </section>
     </Layout>
   );
