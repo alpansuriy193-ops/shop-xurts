@@ -48,6 +48,15 @@ export const UserMenu = () => {
         <DropdownMenuLabel className="font-normal">
           <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">{t("userMenuSignedInAs")}</p>
           <p className="text-sm truncate">{displayName}</p>
+          {isAdmin && (
+            <span className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase text-muted-foreground">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              Status Admin
+            </span>
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate("/orders")} className="text-xs tracking-[0.1em] uppercase cursor-pointer">
