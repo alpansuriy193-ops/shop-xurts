@@ -58,7 +58,7 @@ export const Header = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="font-serif italic text-2xl md:text-3xl tracking-tight text-foreground hover:text-primary transition-colors duration-300"
+            className="font-serif italic text-xl md:text-3xl tracking-tight text-foreground hover:text-primary transition-colors duration-300 shrink-0"
           >
             xurts_shop
           </Link>
@@ -114,12 +114,14 @@ export const Header = () => {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2">
-            <LanguageSelector />
+          <div className="flex items-center gap-0 md:gap-2">
+            <div className="hidden md:block">
+              <LanguageSelector />
+            </div>
             {/* Search Icon */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="p-2 hover:bg-accent transition-colors duration-300 group"
+              className="p-1.5 md:p-2 hover:bg-accent transition-colors duration-300 group"
               aria-label={t("search")}
             >
               <Search className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
@@ -132,7 +134,7 @@ export const Header = () => {
             <Sheet open={wishlistOpen} onOpenChange={setWishlistOpen}>
               <SheetTrigger asChild>
                 <button
-                  className="relative p-2 hover:bg-accent transition-colors duration-300 group"
+                  className="relative p-1.5 md:p-2 hover:bg-accent transition-colors duration-300 group"
                   aria-label={t("wishlist")}
                 >
                   <Heart className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
@@ -243,7 +245,7 @@ export const Header = () => {
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 hover:bg-accent transition-colors duration-300"
+              className="md:hidden p-1.5 hover:bg-accent transition-colors duration-300"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <AnimatePresence mode="wait">
@@ -284,6 +286,9 @@ export const Header = () => {
               className="md:hidden border-t border-border overflow-hidden"
             >
               <div className="py-8 space-y-6">
+                <div className="px-2">
+                  <LanguageSelector />
+                </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-muted-foreground/50 px-2 mb-3">
                     {t("collections")}
