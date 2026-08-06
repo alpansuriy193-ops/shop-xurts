@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, LogOut, Heart, Package } from "lucide-react";
+import { User, LogOut, Heart, Package, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +18,12 @@ export const UserMenu = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    (supabase as any).rpc("is_admin").then(({ data }: { data: boolean | null }) => setIsAdmin(!!data));
+  }, [user]);
 
   if (!user) {
     return (
@@ -48,6 +56,14 @@ export const UserMenu = () => {
         <DropdownMenuItem onClick={() => navigate("/products")} className="text-xs tracking-[0.1em] uppercase cursor-pointer">
           <Heart className="w-4 h-4 mr-2" /> {t("userMenuShop")}
         </DropdownMenuItem>
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/admin/products")} className="text-xs tracking-[0.1em] uppercase cursor-pointer">
+              <Settings className="w-4 h-4 mr-2" /> Kelola Produk
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={async () => { await signOut(); navigate("/"); }}
