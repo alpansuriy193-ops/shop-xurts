@@ -1,12 +1,27 @@
 import { Link } from "react-router-dom";
-import { Heart, Eye } from "lucide-react";
+import { Heart, Eye, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Product, collections } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { QuickViewDialog } from "./QuickViewDialog";
 import { useLanguage } from "@/i18n/LanguageContext";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +32,10 @@ interface ProductCardProps {
 export const ProductCard = ({ product, index = 0, variant = "default" }: ProductCardProps) => {
   const { t, tCollection } = useLanguage();
   const { addItem, removeItem, isInWishlist } = useWishlist();
+  const isAdmin = useIsAdmin();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const canDelete = isAdmin && UUID_RE.test(product.id);
   const inWishlist = isInWishlist(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const hasSecondImage = product.images.length > 1;
@@ -38,6 +57,22 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
     e.preventDefault();
     e.stopPropagation();
     setQuickOpen(true);
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    const { error } = await (supabase as any)
+      .from("affiliate_products")
+      .delete()
+      .eq("id", product.id);
+    setDeleting(false);
+    setConfirmOpen(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Produk dihapus.");
+    window.location.reload();
   };
 
   return (
@@ -85,7 +120,8 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
           <button
             onClick={handleWishlistToggle}
             className={cn(
-              "absolute top-5 right-5 p-2.5 rounded-full transition-all duration-500",
+              "absolute top-5 p-2.5 rounded-full transition-all duration-500",
+              canDelete ? "right-16" : "right-5",
               "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
               "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
               inWishlist && "opacity-100 translate-y-0"
@@ -99,12 +135,29 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             />
           </button>
 
+          {/* Admin delete button */}
+          {canDelete && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setConfirmOpen(true);
+              }}
+              aria-label={`Hapus ${product.name}`}
+              disabled={deleting}
+              className="absolute top-5 right-5 p-2 rounded-full bg-destructive text-destructive-foreground shadow-md transition-all duration-300 hover:scale-110 disabled:opacity-60"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Quick view button */}
           <button
             onClick={handleQuickView}
             aria-label={t("cardQuickViewAria")}
             className={cn(
-              "absolute top-5 right-16 p-2.5 rounded-full transition-all duration-500",
+              "absolute top-5 transition-all duration-500 p-2.5 rounded-full",
+              canDelete ? "right-[6.5rem]" : "right-16",
               "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
               "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
             )}
@@ -196,6 +249,29 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
       </Link>
     </motion.article>
     <QuickViewDialog product={product} open={quickOpen} onOpenChange={setQuickOpen} />
+    <AlertDialog open={confirmOpen} onOpenChange={(open) => !open && setConfirmOpen(false)}>
+      <AlertDialogContent className="rounded-none">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="font-serif text-2xl">Hapus produk ini?</AlertDialogTitle>
+          <AlertDialogDescription>
+            "{product.name}" akan dihapus permanen dari katalog.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="rounded-none" disabled={deleting}>Batal</AlertDialogCancel>
+          <AlertDialogAction
+            className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={deleting}
+            onClick={(e) => {
+              e.preventDefault();
+              handleDelete();
+            }}
+          >
+            {deleting ? "Menghapus..." : "Ya, hapus"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 };
