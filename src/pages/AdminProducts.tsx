@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Pencil, Plus, Trash2, ExternalLink } from "lucide-react";
 import {
   AlertDialog,
@@ -150,6 +151,8 @@ const AdminProducts = () => {
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<AffiliateProductRow | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const showSizes = ["fashion", "sepatu", "aksesoris"].includes(form.collection);
   const showParfum = form.collection === "parfum";
@@ -244,8 +247,25 @@ const AdminProducts = () => {
     if (error) return toast.error(error.message);
     toast.success("Produk dihapus.");
     if (form.id === id) setForm(emptyForm);
+    setSelected((prev) => prev.filter((s) => s !== id));
     fetchRows();
   };
+
+  const removeMany = async () => {
+    if (selected.length === 0) return;
+    setDeleting(true);
+    const { error } = await (supabase as any).from("affiliate_products").delete().in("id", selected);
+    setDeleting(false);
+    setBulkOpen(false);
+    if (error) return toast.error(error.message);
+    toast.success(`${selected.length} produk dihapus.`);
+    if (selected.includes(form.id)) setForm(emptyForm);
+    setSelected([]);
+    fetchRows();
+  };
+
+  const toggleSelected = (id: string) =>
+    setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
 
   if (!authorized) return null;
 
@@ -418,11 +438,40 @@ const AdminProducts = () => {
           {/* List */}
           <aside>
             <h2 className="font-serif text-2xl mb-4">Daftar produk ({rows.length})</h2>
+            {rows.length > 0 && (
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <label className="flex items-center gap-2 text-xs tracking-[.12em] uppercase text-muted-foreground cursor-pointer">
+                  <Checkbox
+                    checked={selected.length === rows.length && rows.length > 0}
+                    onCheckedChange={(v) => setSelected(v ? rows.map((r) => r.id) : [])}
+                  />
+                  Pilih semua
+                </label>
+                {selected.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="rounded-none"
+                    disabled={deleting}
+                    onClick={() => setBulkOpen(true)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {deleting ? "Menghapus..." : `Hapus ${selected.length}`}
+                  </Button>
+                )}
+              </div>
+            )}
             <Separator className="mb-4" />
             <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
               {rows.length === 0 && <p className="text-sm text-muted-foreground">Belum ada produk affiliate.</p>}
               {rows.map((row) => (
                 <div key={row.id} className="flex gap-3 border border-border p-3">
+                  <Checkbox
+                    className="mt-1"
+                    checked={selected.includes(row.id)}
+                    onCheckedChange={() => toggleSelected(row.id)}
+                    aria-label={`Pilih ${row.name}`}
+                  />
                   <img
                     src={row.images?.[0] || "/placeholder.svg"}
                     alt={row.name}
@@ -454,6 +503,7 @@ const AdminProducts = () => {
                       variant="ghost"
                       onClick={() => setPendingDelete(row)}
                       aria-label="Hapus produk"
+                      disabled={deleting}
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -484,6 +534,30 @@ const AdminProducts = () => {
                 }}
               >
                 {deleting ? "Menghapus..." : "Ya, hapus"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={bulkOpen} onOpenChange={(open) => !open && setBulkOpen(false)}>
+          <AlertDialogContent className="rounded-none">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-serif text-2xl">Hapus {selected.length} produk?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Semua produk yang dipilih akan dihapus permanen dan tidak bisa dikembalikan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-none" disabled={deleting}>Batal</AlertDialogCancel>
+              <AlertDialogAction
+                className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={deleting}
+                onClick={(e) => {
+                  e.preventDefault();
+                  removeMany();
+                }}
+              >
+                {deleting ? "Menghapus..." : "Ya, hapus semua"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
