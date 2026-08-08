@@ -94,6 +94,28 @@ const Products = () => {
     ? getCollectionBySlug(activeCollection)
     : null;
 
+  const handleDeleteAll = async () => {
+    setDeletingAll(true);
+    const remoteIds = filteredAndSortedProducts.filter((p) => UUID_RE.test(p.id)).map((p) => p.id);
+    const localIds = filteredAndSortedProducts.filter((p) => !UUID_RE.test(p.id)).map((p) => p.id);
+
+    if (remoteIds.length) {
+      const { error } = await (supabase as any)
+        .from("affiliate_products")
+        .delete()
+        .in("id", remoteIds);
+      if (error) {
+        setDeletingAll(false);
+        setConfirmAllOpen(false);
+        toast.error(error.message);
+        return;
+      }
+    }
+    localIds.forEach((id) => hideProduct(id));
+    toast.success(`${remoteIds.length + localIds.length} produk dihapus.`);
+    window.location.reload();
+  };
+
   const handleFilterChange = (slug: string) => {
     const newParams = new URLSearchParams(searchParams);
     if (slug === "all") {
