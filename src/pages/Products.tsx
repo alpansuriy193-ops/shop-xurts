@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useDeleteMode } from "@/hooks/useDeleteMode";
+import { Trash2, Check } from "lucide-react";
 import { products, collections, getCollectionBySlug } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +31,9 @@ const sortOptions: { value: SortOption; labelKey: string }[] = [
 
 const Products = () => {
   const { t, tCollection, tCollectionDesc } = useLanguage();
+  const isAdmin = useIsAdmin();
+  const deleteMode = useDeleteMode((s) => s.deleteMode);
+  const toggleDeleteMode = useDeleteMode((s) => s.toggle);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
@@ -204,6 +210,20 @@ const Products = () => {
                     { count: filteredAndSortedProducts.length }
                   )}
                 </p>
+                {isAdmin && (
+                  <Button
+                    variant={deleteMode ? "destructive" : "outline"}
+                    size="sm"
+                    onClick={toggleDeleteMode}
+                    className="rounded-none text-xs tracking-[0.1em] uppercase"
+                  >
+                    {deleteMode ? (
+                      <><Check className="mr-2 h-4 w-4" />Selesai</>
+                    ) : (
+                      <><Trash2 className="mr-2 h-4 w-4" />Pilih produk untuk dihapus</>
+                    )}
+                  </Button>
+                )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
                 {filteredAndSortedProducts.map((product, index) => (
