@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { products, type Product } from "@/data/products";
+import { readHiddenIds } from "@/hooks/useHiddenProducts";
 
 export interface AffiliateProductRow {
   id: string;
@@ -60,10 +61,20 @@ export const rowToProduct = (row: AffiliateProductRow): Product => ({
 
 let loaded = false;
 
+/** Remove locally hidden (deleted-by-admin) demo products from the in-memory catalog. */
+export const pruneHiddenProducts = (): void => {
+  const hidden = new Set(readHiddenIds());
+  if (!hidden.size) return;
+  for (let i = products.length - 1; i >= 0; i--) {
+    if (hidden.has(products[i].id)) products.splice(i, 1);
+  }
+};
+
 /** Fetch admin-managed products and merge them into the in-memory catalog. */
 export const loadRemoteCatalog = async (): Promise<void> => {
   if (loaded) return;
   loaded = true;
+  pruneHiddenProducts();
   const { data, error } = await (supabase as any)
     .from("affiliate_products")
     .select("*")
@@ -79,4 +90,5 @@ export const loadRemoteCatalog = async (): Promise<void> => {
     if (existing >= 0) products[existing] = item;
     else products.unshift(item);
   }
+  pruneHiddenProducts();
 };

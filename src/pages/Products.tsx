@@ -6,6 +6,7 @@ import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useDeleteMode } from "@/hooks/useDeleteMode";
+import { useHiddenProducts } from "@/hooks/useHiddenProducts";
 import { Trash2, Check } from "lucide-react";
 import { products, collections, getCollectionBySlug } from "@/data/products";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ const Products = () => {
   const { t, tCollection, tCollectionDesc } = useLanguage();
   const isAdmin = useIsAdmin();
   const deleteMode = useDeleteMode((s) => s.deleteMode);
+  const hiddenCount = useHiddenProducts((s) => s.hiddenIds.length);
+  const restoreAll = useHiddenProducts((s) => s.restoreAll);
   const toggleDeleteMode = useDeleteMode((s) => s.toggle);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
@@ -211,6 +214,20 @@ const Products = () => {
                   )}
                 </p>
                 {isAdmin && (
+                  <div className="flex items-center gap-2">
+                  {hiddenCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        restoreAll();
+                        window.location.reload();
+                      }}
+                      className="rounded-none text-xs tracking-[0.1em] uppercase"
+                    >
+                      Pulihkan {hiddenCount} produk contoh
+                    </Button>
+                  )}
                   <Button
                     variant={deleteMode ? "destructive" : "outline"}
                     size="sm"
@@ -223,6 +240,7 @@ const Products = () => {
                       <><Trash2 className="mr-2 h-4 w-4" />Pilih produk untuk dihapus</>
                     )}
                   </Button>
+                  </div>
                 )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
