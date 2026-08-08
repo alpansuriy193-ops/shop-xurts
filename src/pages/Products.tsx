@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
@@ -19,6 +19,20 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type SortOption = "featured" | "newest" | "price-asc" | "price-desc" | "name-asc";
 
@@ -34,9 +48,10 @@ const Products = () => {
   const { t, tCollection, tCollectionDesc } = useLanguage();
   const isAdmin = useIsAdmin();
   const deleteMode = useDeleteMode((s) => s.deleteMode);
-  const hiddenCount = useHiddenProducts((s) => s.hiddenIds.length);
-  const restoreAll = useHiddenProducts((s) => s.restoreAll);
+  const hideProduct = useHiddenProducts((s) => s.hide);
   const toggleDeleteMode = useDeleteMode((s) => s.toggle);
+  const [confirmAllOpen, setConfirmAllOpen] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
@@ -78,6 +93,28 @@ const Products = () => {
   const currentCollection = activeCollection !== "all"
     ? getCollectionBySlug(activeCollection)
     : null;
+
+  const handleDeleteAll = async () => {
+    setDeletingAll(true);
+    const remoteIds = filteredAndSortedProducts.filter((p) => UUID_RE.test(p.id)).map((p) => p.id);
+    const localIds = filteredAndSortedProducts.filter((p) => !UUID_RE.test(p.id)).map((p) => p.id);
+
+    if (remoteIds.length) {
+      const { error } = await (supabase as any)
+        .from("affiliate_products")
+        .delete()
+        .in("id", remoteIds);
+      if (error) {
+        setDeletingAll(false);
+        setConfirmAllOpen(false);
+        toast.error(error.message);
+        return;
+      }
+    }
+    localIds.forEach((id) => hideProduct(id));
+    toast.success(`${remoteIds.length + localIds.length} produk dihapus.`);
+    window.location.reload();
+  };
 
   const handleFilterChange = (slug: string) => {
     const newParams = new URLSearchParams(searchParams);
@@ -215,17 +252,18 @@ const Products = () => {
                 </p>
                 {isAdmin && (
                   <div className="flex items-center gap-2">
-                  {hiddenCount > 0 && (
+                  {deleteMode && (
                     <Button
-                      variant="ghost"
+                      variant="destructive"
                       size="sm"
-                      onClick={() => {
-                        restoreAll();
-                        window.location.reload();
-                      }}
+                      disabled={deletingAll}
+                      onClick={() => setConfirmAllOpen(true)}
                       className="rounded-none text-xs tracking-[0.1em] uppercase"
                     >
-                      Pulihkan {hiddenCount} produk contoh
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {deletingAll
+                        ? "Menghapus..."
+                        : `Pilih semua & hapus (${filteredAndSortedProducts.length})`}
                     </Button>
                   )}
                   <Button
@@ -309,6 +347,32 @@ const Products = () => {
           </motion.div>
         </div>
       </section>
+
+      <AlertDialog open={confirmAllOpen} onOpenChange={(open) => !open && setConfirmAllOpen(false)}>
+        <AlertDialogContent className="rounded-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif text-2xl">
+              Hapus semua produk yang tampil?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {filteredAndSortedProducts.length} produk pada tampilan ini akan dihapus permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-none" disabled={deletingAll}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deletingAll}
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteAll();
+              }}
+            >
+              {deletingAll ? "Menghapus..." : "Ya, hapus semua"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 };
