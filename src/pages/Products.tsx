@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
@@ -19,6 +19,20 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type SortOption = "featured" | "newest" | "price-asc" | "price-desc" | "name-asc";
 
@@ -34,9 +48,10 @@ const Products = () => {
   const { t, tCollection, tCollectionDesc } = useLanguage();
   const isAdmin = useIsAdmin();
   const deleteMode = useDeleteMode((s) => s.deleteMode);
-  const hiddenCount = useHiddenProducts((s) => s.hiddenIds.length);
-  const restoreAll = useHiddenProducts((s) => s.restoreAll);
+  const hideProduct = useHiddenProducts((s) => s.hide);
   const toggleDeleteMode = useDeleteMode((s) => s.toggle);
+  const [confirmAllOpen, setConfirmAllOpen] = useState(false);
+  const [deletingAll, setDeletingAll] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
