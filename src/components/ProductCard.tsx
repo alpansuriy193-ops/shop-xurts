@@ -7,6 +7,7 @@ import { Product, collections } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useDeleteMode } from "@/hooks/useDeleteMode";
+import { useHiddenProducts } from "@/hooks/useHiddenProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { QuickViewDialog } from "./QuickViewDialog";
@@ -35,9 +36,11 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const { addItem, removeItem, isInWishlist } = useWishlist();
   const isAdmin = useIsAdmin();
   const deleteMode = useDeleteMode((s) => s.deleteMode);
+  const hideProduct = useHiddenProducts((s) => s.hide);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const canDelete = isAdmin && deleteMode && UUID_RE.test(product.id);
+  const isRemote = UUID_RE.test(product.id);
+  const canDelete = isAdmin && deleteMode;
   const inWishlist = isInWishlist(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const hasSecondImage = product.images.length > 1;
@@ -63,6 +66,14 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
 
   const handleDelete = async () => {
     setDeleting(true);
+    if (!isRemote) {
+      hideProduct(product.id);
+      setDeleting(false);
+      setConfirmOpen(false);
+      toast.success("Produk contoh dihapus dari katalog.");
+      window.location.reload();
+      return;
+    }
     const { error } = await (supabase as any)
       .from("affiliate_products")
       .delete()
