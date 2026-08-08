@@ -230,17 +230,18 @@ const Products = () => {
                 </p>
                 {isAdmin && (
                   <div className="flex items-center gap-2">
-                  {hiddenCount > 0 && (
+                  {deleteMode && (
                     <Button
-                      variant="ghost"
+                      variant="destructive"
                       size="sm"
-                      onClick={() => {
-                        restoreAll();
-                        window.location.reload();
-                      }}
+                      disabled={deletingAll}
+                      onClick={() => setConfirmAllOpen(true)}
                       className="rounded-none text-xs tracking-[0.1em] uppercase"
                     >
-                      Pulihkan {hiddenCount} produk contoh
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {deletingAll
+                        ? "Menghapus..."
+                        : `Pilih semua & hapus (${filteredAndSortedProducts.length})`}
                     </Button>
                   )}
                   <Button
