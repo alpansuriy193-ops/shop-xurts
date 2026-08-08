@@ -347,6 +347,32 @@ const Products = () => {
           </motion.div>
         </div>
       </section>
+
+      <AlertDialog open={confirmAllOpen} onOpenChange={(open) => !open && setConfirmAllOpen(false)}>
+        <AlertDialogContent className="rounded-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif text-2xl">
+              Hapus semua produk yang tampil?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {filteredAndSortedProducts.length} produk pada tampilan ini akan dihapus permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-none" disabled={deletingAll}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deletingAll}
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteAll();
+              }}
+            >
+              {deletingAll ? "Menghapus..." : "Ya, hapus semua"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 };
