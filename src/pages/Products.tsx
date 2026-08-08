@@ -31,6 +31,9 @@ const sortOptions: { value: SortOption; labelKey: string }[] = [
 
 const Products = () => {
   const { t, tCollection, tCollectionDesc } = useLanguage();
+  const isAdmin = useIsAdmin();
+  const deleteMode = useDeleteMode((s) => s.deleteMode);
+  const toggleDeleteMode = useDeleteMode((s) => s.toggle);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
