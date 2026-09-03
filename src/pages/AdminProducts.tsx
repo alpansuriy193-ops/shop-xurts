@@ -150,7 +150,6 @@ const AdminProducts = () => {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<AffiliateProductRow | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
 
@@ -240,9 +239,7 @@ const AdminProducts = () => {
   };
 
   const remove = async (id: string) => {
-    setDeleting(true);
     const { error } = await (supabase as any).from("affiliate_products").delete().eq("id", id);
-    setDeleting(false);
     setPendingDelete(null);
     if (error) return toast.error(error.message);
     toast.success("Produk dihapus.");
@@ -253,9 +250,7 @@ const AdminProducts = () => {
 
   const removeMany = async () => {
     if (selected.length === 0) return;
-    setDeleting(true);
     const { error } = await (supabase as any).from("affiliate_products").delete().in("id", selected);
-    setDeleting(false);
     setBulkOpen(false);
     if (error) return toast.error(error.message);
     toast.success(`${selected.length} produk dihapus.`);
@@ -452,11 +447,10 @@ const AdminProducts = () => {
                     size="sm"
                     variant="destructive"
                     className="rounded-none"
-                    disabled={deleting}
                     onClick={() => setBulkOpen(true)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    {deleting ? "Menghapus..." : `Hapus ${selected.length}`}
+                    Hapus {selected.length}
                   </Button>
                 )}
               </div>
@@ -503,7 +497,6 @@ const AdminProducts = () => {
                       variant="ghost"
                       onClick={() => setPendingDelete(row)}
                       aria-label="Hapus produk"
-                      disabled={deleting}
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -527,13 +520,12 @@ const AdminProducts = () => {
               <AlertDialogCancel className="rounded-none">Batal</AlertDialogCancel>
               <AlertDialogAction
                 className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                disabled={deleting}
                 onClick={(e) => {
                   e.preventDefault();
                   if (pendingDelete) remove(pendingDelete.id);
                 }}
               >
-                {deleting ? "Menghapus..." : "Ya, hapus"}
+                Ya, hapus
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -548,16 +540,15 @@ const AdminProducts = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-none" disabled={deleting}>Batal</AlertDialogCancel>
+              <AlertDialogCancel className="rounded-none">Batal</AlertDialogCancel>
               <AlertDialogAction
                 className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                disabled={deleting}
                 onClick={(e) => {
                   e.preventDefault();
                   removeMany();
                 }}
               >
-                {deleting ? "Menghapus..." : "Ya, hapus semua"}
+                Ya, hapus semua
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

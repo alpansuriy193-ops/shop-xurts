@@ -38,7 +38,6 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const deleteMode = useDeleteMode((s) => s.deleteMode);
   const hideProduct = useHiddenProducts((s) => s.hide);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const isRemote = UUID_RE.test(product.id);
   const canDelete = isAdmin && deleteMode;
   const inWishlist = isInWishlist(product.id);
@@ -65,10 +64,8 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   };
 
   const handleDelete = async () => {
-    setDeleting(true);
     if (!isRemote) {
       hideProduct(product.id);
-      setDeleting(false);
       setConfirmOpen(false);
       toast.success("Produk contoh dihapus dari katalog.");
       window.location.reload();
@@ -78,7 +75,6 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
       .from("affiliate_products")
       .delete()
       .eq("id", product.id);
-    setDeleting(false);
     setConfirmOpen(false);
     if (error) {
       toast.error(error.message);
@@ -157,8 +153,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 setConfirmOpen(true);
               }}
               aria-label={`Hapus ${product.name}`}
-              disabled={deleting}
-              className="absolute top-5 right-5 p-2 rounded-full bg-destructive text-destructive-foreground shadow-md transition-all duration-300 hover:scale-110 disabled:opacity-60"
+              className="absolute top-5 right-5 p-2 rounded-full bg-destructive text-destructive-foreground shadow-md transition-all duration-300 hover:scale-110"
             >
               <X className="w-4 h-4" />
             </button>
@@ -263,28 +258,27 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
     </motion.article>
     <QuickViewDialog product={product} open={quickOpen} onOpenChange={setQuickOpen} />
     <AlertDialog open={confirmOpen} onOpenChange={(open) => !open && setConfirmOpen(false)}>
-      <AlertDialogContent className="rounded-none">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="font-serif text-2xl">Hapus produk ini?</AlertDialogTitle>
-          <AlertDialogDescription>
-            "{product.name}" akan dihapus permanen dari katalog.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="rounded-none" disabled={deleting}>Batal</AlertDialogCancel>
-          <AlertDialogAction
-            className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            disabled={deleting}
-            onClick={(e) => {
-              e.preventDefault();
-              handleDelete();
-            }}
-          >
-            {deleting ? "Menghapus..." : "Ya, hapus"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        <AlertDialogContent className="rounded-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif text-2xl">Hapus produk ini?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "{product.name}" akan dihapus permanen dari katalog.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-none">Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                handleDelete();
+              }}
+            >
+              Ya, hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
