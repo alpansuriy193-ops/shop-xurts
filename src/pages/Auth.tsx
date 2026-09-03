@@ -87,12 +87,30 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    const emailRes = emailSchema.safeParse(signInEmail);
+    if (!emailRes.success) {
+      toast({ title: "Email tidak valid", description: "Isi email kamu dulu, lalu klik lupa sandi." });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(emailRes.data, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    setLoading(false);
+    toast({
+      title: error ? "Gagal kirim email reset" : "Email reset terkirim",
+      description: error ? error.message : `Cek inbox ${emailRes.data} untuk tautan ganti sandi.`,
+    });
+  };
+
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) {
       toast({ title: t("authGoogleFailed"), description: result.error.message });
     }
   };
+
 
   return (
     <Layout>
