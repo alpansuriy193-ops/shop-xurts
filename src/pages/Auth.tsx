@@ -157,9 +157,20 @@ const Auth = () => {
                     </button>
                   </div>
                 </div>
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    disabled={loading}
+                    className="text-[11px] tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  >
+                    Lupa sandi?
+                  </button>
+                </div>
                 <Button type="submit" disabled={loading} className="w-full rounded-none py-6 text-xs tracking-[0.15em] uppercase">
                   {loading ? t("authSigningIn") : t("authSignIn")}
                 </Button>
+
               </form>
             </TabsContent>
 
