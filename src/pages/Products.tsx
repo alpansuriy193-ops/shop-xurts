@@ -253,14 +253,11 @@ const Products = () => {
                     <Button
                       variant="destructive"
                       size="sm"
-                      disabled={deletingAll}
                       onClick={() => setConfirmAllOpen(true)}
                       className="rounded-none text-xs tracking-[0.1em] uppercase"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      {deletingAll
-                        ? "Menghapus..."
-                        : `Pilih semua & hapus (${filteredAndSortedProducts.length})`}
+                      Pilih semua & hapus ({filteredAndSortedProducts.length})
                     </Button>
                   )}
                   <Button
@@ -356,16 +353,15 @@ const Products = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-none" disabled={deletingAll}>Batal</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-none">Batal</AlertDialogCancel>
             <AlertDialogAction
               className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deletingAll}
               onClick={(e) => {
                 e.preventDefault();
                 handleDeleteAll();
               }}
             >
-              {deletingAll ? "Menghapus..." : "Ya, hapus semua"}
+              Ya, hapus semua
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
