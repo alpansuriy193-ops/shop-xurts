@@ -87,12 +87,30 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    const emailRes = emailSchema.safeParse(signInEmail);
+    if (!emailRes.success) {
+      toast({ title: "Email tidak valid", description: "Isi email kamu dulu, lalu klik lupa sandi." });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(emailRes.data, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    setLoading(false);
+    toast({
+      title: error ? "Gagal kirim email reset" : "Email reset terkirim",
+      description: error ? error.message : `Cek inbox ${emailRes.data} untuk tautan ganti sandi.`,
+    });
+  };
+
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) {
       toast({ title: t("authGoogleFailed"), description: result.error.message });
     }
   };
+
 
   return (
     <Layout>
@@ -139,9 +157,20 @@ const Auth = () => {
                     </button>
                   </div>
                 </div>
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    disabled={loading}
+                    className="text-[11px] tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  >
+                    Lupa sandi?
+                  </button>
+                </div>
                 <Button type="submit" disabled={loading} className="w-full rounded-none py-6 text-xs tracking-[0.15em] uppercase">
                   {loading ? t("authSigningIn") : t("authSignIn")}
                 </Button>
+
               </form>
             </TabsContent>
 
