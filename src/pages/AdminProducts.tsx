@@ -150,7 +150,6 @@ const AdminProducts = () => {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<AffiliateProductRow | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
 
@@ -240,9 +239,7 @@ const AdminProducts = () => {
   };
 
   const remove = async (id: string) => {
-    setDeleting(true);
     const { error } = await (supabase as any).from("affiliate_products").delete().eq("id", id);
-    setDeleting(false);
     setPendingDelete(null);
     if (error) return toast.error(error.message);
     toast.success("Produk dihapus.");
@@ -253,9 +250,7 @@ const AdminProducts = () => {
 
   const removeMany = async () => {
     if (selected.length === 0) return;
-    setDeleting(true);
     const { error } = await (supabase as any).from("affiliate_products").delete().in("id", selected);
-    setDeleting(false);
     setBulkOpen(false);
     if (error) return toast.error(error.message);
     toast.success(`${selected.length} produk dihapus.`);

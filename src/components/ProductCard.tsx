@@ -38,7 +38,6 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const deleteMode = useDeleteMode((s) => s.deleteMode);
   const hideProduct = useHiddenProducts((s) => s.hide);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const isRemote = UUID_RE.test(product.id);
   const canDelete = isAdmin && deleteMode;
   const inWishlist = isInWishlist(product.id);
@@ -65,10 +64,8 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   };
 
   const handleDelete = async () => {
-    setDeleting(true);
     if (!isRemote) {
       hideProduct(product.id);
-      setDeleting(false);
       setConfirmOpen(false);
       toast.success("Produk contoh dihapus dari katalog.");
       window.location.reload();
@@ -78,7 +75,6 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
       .from("affiliate_products")
       .delete()
       .eq("id", product.id);
-    setDeleting(false);
     setConfirmOpen(false);
     if (error) {
       toast.error(error.message);

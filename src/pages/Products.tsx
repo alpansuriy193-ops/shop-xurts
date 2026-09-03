@@ -51,7 +51,6 @@ const Products = () => {
   const hideProduct = useHiddenProducts((s) => s.hide);
   const toggleDeleteMode = useDeleteMode((s) => s.toggle);
   const [confirmAllOpen, setConfirmAllOpen] = useState(false);
-  const [deletingAll, setDeletingAll] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("collection") || "all";
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
@@ -95,7 +94,6 @@ const Products = () => {
     : null;
 
   const handleDeleteAll = async () => {
-    setDeletingAll(true);
     const remoteIds = filteredAndSortedProducts.filter((p) => UUID_RE.test(p.id)).map((p) => p.id);
     const localIds = filteredAndSortedProducts.filter((p) => !UUID_RE.test(p.id)).map((p) => p.id);
 
@@ -105,7 +103,6 @@ const Products = () => {
         .delete()
         .in("id", remoteIds);
       if (error) {
-        setDeletingAll(false);
         setConfirmAllOpen(false);
         toast.error(error.message);
         return;
