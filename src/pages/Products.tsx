@@ -95,25 +95,25 @@ const Products = () => {
     ? getCollectionBySlug(activeCollection)
     : null;
 
-  const handleDeleteAll = async () => {
-    const remoteIds = filteredAndSortedProducts.filter((p) => UUID_RE.test(p.id)).map((p) => p.id);
-    const localIds = filteredAndSortedProducts.filter((p) => !UUID_RE.test(p.id)).map((p) => p.id);
+  const handleDeleteAll = () => {
+    const all = filteredAndSortedProducts.map((p) => p.id);
+    const remoteIds = all.filter((id) => UUID_RE.test(id));
+
+    all.forEach((id) => hideProduct(id));
+    setConfirmAllOpen(false);
+    toast.success(`${all.length} produk dihapus.`);
 
     if (remoteIds.length) {
-      const { error } = await (supabase as any)
+      (supabase as any)
         .from("affiliate_products")
         .delete()
-        .in("id", remoteIds);
-      if (error) {
-        setConfirmAllOpen(false);
-        toast.error(error.message);
-        return;
-      }
+        .in("id", remoteIds)
+        .then(({ error }: { error: { message: string } | null }) => {
+          if (error) toast.error(error.message);
+        });
     }
-    localIds.forEach((id) => hideProduct(id));
-    toast.success(`${remoteIds.length + localIds.length} produk dihapus.`);
-    window.location.reload();
   };
+
 
   const handleFilterChange = (slug: string) => {
     const newParams = new URLSearchParams(searchParams);
