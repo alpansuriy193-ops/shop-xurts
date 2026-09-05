@@ -149,7 +149,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 setConfirmOpen(true);
               }}
               aria-label={`Hapus ${product.name}`}
-              className="absolute top-5 right-5 p-2 rounded-full bg-destructive text-destructive-foreground shadow-md transition-all duration-300 hover:scale-110"
+              className="absolute top-5 right-5 z-20 p-2 rounded-full bg-destructive text-destructive-foreground shadow-md transition-all duration-300 hover:scale-110"
             >
               <X className="w-4 h-4" />
             </button>
