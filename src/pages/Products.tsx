@@ -89,7 +89,7 @@ const Products = () => {
     }
 
     return result;
-  }, [activeCollection, activeSort]);
+  }, [activeCollection, activeSort, hiddenIds]);
 
   const currentCollection = activeCollection !== "all"
     ? getCollectionBySlug(activeCollection)
