@@ -49,6 +49,7 @@ const Products = () => {
   const isAdmin = useIsAdmin();
   const deleteMode = useDeleteMode((s) => s.deleteMode);
   const hideProduct = useHiddenProducts((s) => s.hide);
+  const hiddenIds = useHiddenProducts((s) => s.hiddenIds);
   const toggleDeleteMode = useDeleteMode((s) => s.toggle);
   const [confirmAllOpen, setConfirmAllOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,7 +57,8 @@ const Products = () => {
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
 
   const filteredAndSortedProducts = useMemo(() => {
-    let result = [...products];
+    let result = products.filter((p) => !hiddenIds.includes(p.id));
+
 
     // Filter by collection
     if (activeCollection !== "all") {
