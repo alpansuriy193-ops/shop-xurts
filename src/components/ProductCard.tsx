@@ -203,10 +203,11 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             )}
           </div>
 
-          {/* Sold out overlay */}
+          {/* Sold out overlay (non-blocking so admin buttons stay clickable) */}
           {soldOut && (
-            <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
+            <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px] pointer-events-none" />
           )}
+
 
           {/* Quick View Indicator */}
           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-6 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
