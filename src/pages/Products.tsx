@@ -49,6 +49,7 @@ const Products = () => {
   const isAdmin = useIsAdmin();
   const deleteMode = useDeleteMode((s) => s.deleteMode);
   const hideProduct = useHiddenProducts((s) => s.hide);
+  const hiddenIds = useHiddenProducts((s) => s.hiddenIds);
   const toggleDeleteMode = useDeleteMode((s) => s.toggle);
   const [confirmAllOpen, setConfirmAllOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,7 +57,8 @@ const Products = () => {
   const activeSort = (searchParams.get("sort") as SortOption) || "featured";
 
   const filteredAndSortedProducts = useMemo(() => {
-    let result = [...products];
+    let result = products.filter((p) => !hiddenIds.includes(p.id));
+
 
     // Filter by collection
     if (activeCollection !== "all") {
@@ -87,31 +89,31 @@ const Products = () => {
     }
 
     return result;
-  }, [activeCollection, activeSort]);
+  }, [activeCollection, activeSort, hiddenIds]);
 
   const currentCollection = activeCollection !== "all"
     ? getCollectionBySlug(activeCollection)
     : null;
 
-  const handleDeleteAll = async () => {
-    const remoteIds = filteredAndSortedProducts.filter((p) => UUID_RE.test(p.id)).map((p) => p.id);
-    const localIds = filteredAndSortedProducts.filter((p) => !UUID_RE.test(p.id)).map((p) => p.id);
+  const handleDeleteAll = () => {
+    const all = filteredAndSortedProducts.map((p) => p.id);
+    const remoteIds = all.filter((id) => UUID_RE.test(id));
+
+    all.forEach((id) => hideProduct(id));
+    setConfirmAllOpen(false);
+    toast.success(`${all.length} produk dihapus.`);
 
     if (remoteIds.length) {
-      const { error } = await (supabase as any)
+      (supabase as any)
         .from("affiliate_products")
         .delete()
-        .in("id", remoteIds);
-      if (error) {
-        setConfirmAllOpen(false);
-        toast.error(error.message);
-        return;
-      }
+        .in("id", remoteIds)
+        .then(({ error }: { error: { message: string } | null }) => {
+          if (error) toast.error(error.message);
+        });
     }
-    localIds.forEach((id) => hideProduct(id));
-    toast.success(`${remoteIds.length + localIds.length} produk dihapus.`);
-    window.location.reload();
   };
+
 
   const handleFilterChange = (slug: string) => {
     const newParams = new URLSearchParams(searchParams);

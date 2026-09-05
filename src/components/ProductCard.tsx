@@ -63,26 +63,22 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
     setQuickOpen(true);
   };
 
-  const handleDelete = async () => {
-    if (!isRemote) {
-      hideProduct(product.id);
-      setConfirmOpen(false);
-      toast.success("Produk contoh dihapus dari katalog.");
-      window.location.reload();
-      return;
-    }
-    const { error } = await (supabase as any)
-      .from("affiliate_products")
-      .delete()
-      .eq("id", product.id);
+  const handleDelete = () => {
+    // Sembunyikan langsung supaya UI instan; hapus di database berjalan di belakang.
+    hideProduct(product.id);
     setConfirmOpen(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
     toast.success("Produk dihapus.");
-    window.location.reload();
+    if (isRemote) {
+      (supabase as any)
+        .from("affiliate_products")
+        .delete()
+        .eq("id", product.id)
+        .then(({ error }: { error: { message: string } | null }) => {
+          if (error) toast.error(error.message);
+        });
+    }
   };
+
 
   return (
     <>
